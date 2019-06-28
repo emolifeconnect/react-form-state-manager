@@ -1,0 +1,16 @@
+{
+  "name": "examples",
+  "version": "1.0.0",
+  "description": "Examples",
+  "private": true,
+  "main": "src/index.js",
+  "scripts": {
+    "start": "webpack --mode development --watch"
+  },
+  "dependencies": {
+    "ts-loader": "^6.0.3",
+    "typescript": "^3.5.2",
+    "webpack": "^4.34.0",
+    "webpack-cli": "^3.3.4"
+  }
+}

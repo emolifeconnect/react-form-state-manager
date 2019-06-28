@@ -1,0 +1,37 @@
+{
+  "name": "lotus",
+  "version": "1.0.0",
+  "description": "Lotus",
+  "private": true,
+  "main": "src/index.js",
+  "scripts": {
+    "test": "./node_modules/.bin/jest"
+  },
+  "devDependencies": {
+    "@types/enzyme": "^3.9.3",
+    "@types/enzyme-adapter-react-16": "^1.0.5",
+    "@types/jest": "^24.0.15",
+    "enzyme": "^3.10.0",
+    "enzyme-adapter-react-16": "^1.14.0",
+    "jest": "^24.8.0",
+    "ts-jest": "^24.0.2",
+    "typescript": "^3.5.2"
+  },
+  "dependencies": {
+    "@types/lodash": "^4.14.135",
+    "@types/react": "^16.8.20",
+    "@types/react-dom": "^16.8.4",
+    "lodash": "^4.17.11",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testRegex": "(/test/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
+    "moduleFileExtensions": [
+      "tsx"
+    ]
+  }
+}
