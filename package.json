@@ -1,7 +1,7 @@
 {
-  "name": "lotus",
+  "name": "react-form-state-manager",
   "version": "1.0.0",
-  "description": "Lotus",
+  "description": "Manage form state",
   "private": false,
   "main": "src/index.tsx",
   "scripts": {
