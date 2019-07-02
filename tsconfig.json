@@ -3,13 +3,15 @@
         "module": "es6",
         "target": "es5",
         "jsx": "react",
+        "declaration": true,
         "noImplicitAny": true,
         "removeComments": true,
         "preserveConstEnums": true,
         "sourceMap": true,
-        "esModuleInterop": true
+        "esModuleInterop": true,
+        "outDir": "dist",
+        "moduleResolution": "node"
     },
-    "include": [
-        "src", "test", "examples"
-    ]
+    "include": ["src"],
+    "exclude": ["node_modules", "dist"]
 }
