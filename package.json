@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Lotus",
   "private": true,
-  "main": "src/index.js",
+  "main": "src/index.tsx",
   "scripts": {
     "test": "./node_modules/.bin/jest"
   },
