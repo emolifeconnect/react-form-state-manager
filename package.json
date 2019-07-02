@@ -2,7 +2,7 @@
   "name": "lotus",
   "version": "1.0.0",
   "description": "Lotus",
-  "private": true,
+  "private": false,
   "main": "src/index.tsx",
   "scripts": {
     "test": "./node_modules/.bin/jest"
