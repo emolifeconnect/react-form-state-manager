@@ -1,22 +1,22 @@
 import React from 'react';
 
-import { InputHandler, textHandler } from '../../src/InputHandlers';
+import { floatHandler, InputHandler } from '../../src/InputHandlers';
 import useForm from '../../src/useForm';
 
 const moneyInput = (rules: any = {}) => {
     return {
-        type: 'text',
         inputHandler: {
+            ...floatHandler,
             parse: (value) => {
-                return Math.round(parseFloat(value) * 100);
+                const floatValue = parseFloat(value);
+
+                return !isNaN(floatValue) ? Math.round(floatValue * 100) : null;
             },
             format: (value) => {
-                return value !== null ? (value / 100).toFixed(2) : '';
+                return (value / 100).toFixed(2);
             },
             validate: (value) => {
-                value = parseFloat(value);
-
-                return !isNaN(value) && value * 100 <= rules.max;
+                return value <= rules.max;
             }
         } as InputHandler<number>
     };
@@ -25,19 +25,34 @@ const moneyInput = (rules: any = {}) => {
 const App = () => {
     const form = useForm({
         values: {
-            amount: null,
             posts: [
-                { 'title': 'foo' },
-                { 'title': 'bar' }
-            ]
+            ],
+            fruits: [
+            ],
         }
     });
 
     return <form>
         <label>Custom money field</label>
-        <input {...form.field({ name: 'amount', ...moneyInput({ max: 100000 }) })} placeholder="Money" />
+        <input {...form.text('amount', moneyInput({ max: 100000 }))} placeholder="Money" required />
         <button type="button" onClick={() => form.set('amount', 100)}>1 euro</button>
-        <button type="button" onClick={() => form.reset('amount')}>Reset</button>
+        <button type="button" onClick={() => form.reset('amount')} disabled={!form.changed('amount')}>Reset</button>
+
+        <hr />
+
+        <input {...form.search('search')} placeholder="Search" />
+
+        <hr />
+
+        <textarea {...form.textarea('content')}></textarea>
+
+        <hr />
+
+        <input {...form.file('file', { onChange: console.log })} multiple />
+
+        <hr />
+
+        <input {...form.month('month', { onChange: console.log })} />
 
         <hr />
 
@@ -47,7 +62,6 @@ const App = () => {
 
         {form.values.posts.map((post: any, index: number) => <div key={index}>
             <input {...form.text(`posts.${index}.title`)} minLength={3} />
-            <button type="button" onClick={() => form.reset(`posts.${index}`)} disabled={!form.changed(`posts.${index}`)}>Reset</button>
             <button type="button" onClick={() => form.moveUp('posts', index)} disabled={index == 0}>Move up</button>
             <button type="button" onClick={() => form.moveDown('posts', index)} disabled={index == form.values.posts.length - 1}>Move down</button>
             <button type="button" onClick={() => form.delete('posts', index)}>Delete</button>
@@ -63,8 +77,37 @@ const App = () => {
 
         <hr />
 
+        <input {...form.checkbox('subscribe')} /> Subscribe
+
+        <hr />
+
+        <input {...form.radio('radio', { title: 'foo' })} /> Foo
+        <input {...form.radio('radio', { title: 'bar' })} /> Bar
+
+        <button type="button" onClick={() => form.set('radio', 'foo')}>Foo</button>
+
+        <hr />
+
+        <input {...form.checklist('fruits', { title: 'apple' }, { key: 'title' })} /> Apple
+        <input {...form.checklist('fruits', { title: 'banana' }, { key: 'title' })} /> Banana
+        <input {...form.checklist('fruits', { title: 'orange' }, { key: 'title' })} /> Orange
+
+        <hr />
+
+        <select {...form.select('device', [null, { type: 'phone' }, { type: 'desktop' }])}>
+            <option {...form.option(0)}></option>
+            <option {...form.option(1)}>Phone</option>
+            <option {...form.option(2)}>Desktop</option>
+        </select>
+
+        <hr />
+
         <pre>
-            {JSON.stringify(form.getState(), null, 2)}
+            {JSON.stringify(form.values, null, 2)}
+        </pre>
+
+        <pre>
+            {JSON.stringify(form.valid, null, 2)}
         </pre>
     </form>
 }

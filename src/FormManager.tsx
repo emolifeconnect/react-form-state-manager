@@ -1,120 +1,221 @@
-import { cloneDeep, get, has, isEqual, merge, set, unset } from 'lodash';
+import { cloneDeep, get, has, isArray, isEqual, merge, set, unset } from 'lodash';
 import {
-    ChangeEvent, ChangeEventHandler, DetailedHTMLProps, FocusEvent, FocusEventHandler, InputHTMLAttributes
+    ChangeEvent, ChangeEventHandler, DetailedHTMLProps, FocusEvent, FocusEventHandler, InputHTMLAttributes, Key,
+    OptionHTMLAttributes, SelectHTMLAttributes, TextareaHTMLAttributes
 } from 'react';
 
-import { floatHandler, InputHandler, textHandler } from './InputHandlers';
-
-type InputProps = DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>;
+import { basicHandler, fileHandler, floatHandler, InputHandler } from './InputHandlers';
 
 export default class FormManager {
     public values: any = {};
+    public initialValues: any = {};
     public formattedValues: any = {};
+    public touched: any = {};
     public valid: any = {};
 
     constructor(protected state: FormState, protected setState: any) {
         this.values = state.values;
+        this.initialValues = state.initialValues;
         this.formattedValues = state.formattedValues;
+        this.touched = state.touched;
         this.valid = state.valid;
     }
 
-    public text(name: string, options: FieldOptions = {}): InputProps {
+    public text(name: string, options: InputOptions = {}): InputProps {
         options.name = name;
         options.type = 'text';
-        options.inputHandler = textHandler;
 
-        return this.field(options);
+        return this.input(options);
     }
 
-    public password(name: string, options: FieldOptions = {}): InputProps {
+    public password(name: string, options: InputOptions = {}): InputProps {
         options.name = name;
         options.type = 'password';
-        options.inputHandler = textHandler;
 
-        return this.field(options);
+        return this.input(options);
     }
 
-    public number(name: string, options: FieldOptions = {}): InputProps {
+    public number(name: string, options: InputOptions = {}): InputProps {
         options.name = name;
         options.type = 'number';
-        options.inputHandler = floatHandler;
+        options.inputHandler = merge({}, floatHandler, options.inputHandler);
 
-        return this.field(options);
+        return this.input(options);
     }
 
-    public email(name: string, options: FieldOptions = {}): InputProps {
+    public email(name: string, options: InputOptions = {}): InputProps {
         options.name = name;
         options.type = 'email';
-        options.inputHandler = textHandler;
 
-        return this.field(options);
+        return this.input(options);
     }
 
-    public url(name: string, options: FieldOptions = {}): InputProps {
+    public url(name: string, options: InputOptions = {}): InputProps {
         options.name = name;
         options.type = 'url';
-        options.inputHandler = textHandler;
 
-        return this.field(options);
+        return this.input(options);
     }
 
-    public field({ type, name, onChange, onFocus, onBlur, inputHandler }: FieldOptions ): InputProps {
-        inputHandler = merge({}, textHandler, inputHandler);
+    public color(name: string, options: InputOptions = {}): InputProps {
+        options.name = name;
+        options.type = 'color';
 
-        let formattedValue = null;
+        return this.input(options);
+    }
 
-        if (this.hasFormattedValue(name)) {
-            formattedValue = this.getFormattedValue(name);
-        } else if (this.hasParsedValue(name)) {
-            formattedValue = inputHandler.format(this.getParsedValue(name))
-        }
+    public date(name: string, options: InputOptions = {}): InputProps {
+        options.name = name;
+        options.type = 'date';
 
-        if (this.isEmpty(formattedValue)) {
-            formattedValue = '';
-        }
+        return this.input(options);
+    }
+
+    public datetimeLocal(name: string, options: InputOptions = {}): InputProps {
+        options.name = name;
+        options.type = 'datetime-local';
+
+        return this.input(options);
+    }
+
+    public month(name: string, options: InputOptions = {}): InputProps {
+        options.name = name;
+        options.type = 'month';
+
+        return this.input(options);
+    }
+
+    public search(name: string, options: InputOptions = {}): InputProps {
+        options.name = name;
+        options.type = 'search';
+
+        return this.input(options);
+    }
+
+    public tel(name: string, options: InputOptions = {}): InputProps {
+        options.name = name;
+        options.type = 'tel';
+
+        return this.input(options);
+    }
+
+    public time(name: string, options: InputOptions = {}): InputProps {
+        options.name = name;
+        options.type = 'time';
+
+        return this.input(options);
+    }
+
+    public week(name: string, options: InputOptions = {}): InputProps {
+        options.name = name;
+        options.type = 'week';
+
+        return this.input(options);
+    }
+
+    protected input(options: InputOptions ): InputProps {
+        options.inputHandler = merge({}, basicHandler, options.inputHandler);
 
         return {
-            type,
-            name,
-            value: formattedValue,
-            onChange: this.basicChangeHandler(inputHandler, { onChange }),
-            onFocus: this.basicFocusHandler(inputHandler, { onFocus }),
-            onBlur: this.basicBlurHandler(inputHandler, { onBlur })
+            type: options.type,
+            name: options.name,
+            value: this.getInputValue(options.name, options.inputHandler),
+            onChange: this.inputChangeHandler(options),
+            onFocus: this.basicFocusHandler(options),
+            onBlur: this.inputBlurHandler(options)
         };
     }
 
-    protected basicChangeHandler(inputHandler: InputHandler, { onChange }: FieldOptions) {
-        return (event: ChangeEvent<HTMLInputElement>) => {
-            const { name, value } = event.target;
+    public textarea(name: string, options: TextareaOptions = {}): TextareaProps {
+        options.name = name;
+        options.inputHandler = merge({}, basicHandler, options.inputHandler);
 
+        return {
+            name,
+            value: this.getInputValue(name, options.inputHandler),
+            onChange: this.inputChangeHandler(options),
+            onFocus: this.basicFocusHandler(options),
+            onBlur: this.inputBlurHandler(options)
+        };
+    }
+
+    protected getInputValue(name: string, inputHandler: InputHandler): string {
+        let value = null;
+
+        if (this.hasFormattedValue(name)) {
+            value = this.getFormattedValue(name);
+        } else if (this.hasParsedValue(name)) {
+            value = inputHandler.format(this.getParsedValue(name))
+        }
+
+        if (this.isEmpty(value)) {
+            value = '';
+        }
+
+
+        return value;
+    }
+
+    public file(name: string, options: InputOptions = {}): InputProps {
+        options.name = name;
+        options.type = 'file';
+        options.inputHandler = merge({}, fileHandler, options.inputHandler);
+
+        return {
+            type: 'file',
+            name,
+            onChange: this.fileChangeHandler(options),
+            onFocus: this.basicFocusHandler(options),
+            onBlur: this.basicBlurHandler(options)
+        };
+    }
+
+    protected inputChangeHandler({ inputHandler, onChange }: InputOptions | TextareaOptions): ChangeEventHandler {
+        return (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+            let { name, value, required } = event.target;
+
+            value = inputHandler.filter(value);
+
+            const parsedValue = inputHandler.parse(value);
             const valueIsEmpty = this.isEmpty(value);
-            const valid = event.target.checkValidity() && (valueIsEmpty || inputHandler.validate(value));
-            const parsedValue = !valueIsEmpty && valid ? inputHandler.parse(value) : null;
+            const valid = event.target.checkValidity() && ((valueIsEmpty && !required) || (!valueIsEmpty && inputHandler.validate(parsedValue)));
 
             this.setParsedValue(name, parsedValue);
             this.setFormattedValue(name, value);
             this.setValidity(name, valid);
 
-            if (onChange && parsedValue != this.getParsedValue(name)) {
+            if (onChange && !this.isEqual(parsedValue, this.getParsedValue(name))) {
                 onChange(parsedValue);
             }
-        }
+        };
     }
 
-    protected basicFocusHandler(inputHandler: InputHandler, { onFocus }: FieldOptions) {
-        return (event: FocusEvent<HTMLInputElement>) => {
+    protected basicFocusHandler({ onFocus }: InputOptions | TextareaOptions): FocusEventHandler {
+        return (event: FocusEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
             const { name } = event.target;
+
+            this.setTouched(name, true);
 
             const parsedValue = this.getParsedValue(name);
 
             if (onFocus) {
                 onFocus(parsedValue);
             }
-        }
+        };
     }
 
-    protected basicBlurHandler(inputHandler: InputHandler, { onBlur }: FieldOptions) {
-        return (event: FocusEvent<HTMLInputElement>) => {
+    protected basicBlurHandler({ onBlur }: InputOptions): FocusEventHandler {
+        return (event: FocusEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+            const { name } = event.target;
+
+            if (onBlur) {
+                onBlur(this.getParsedValue(name));
+            }
+        };
+    }
+
+    protected inputBlurHandler({ inputHandler, onBlur }: InputOptions | TextareaOptions): FocusEventHandler {
+        return (event: FocusEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
             const { name } = event.target;
 
             const parsedValue = this.getParsedValue(name);
@@ -125,23 +226,167 @@ export default class FormManager {
             if (onBlur) {
                 onBlur(parsedValue);
             }
-        }
+        };
     }
 
-    public setValue(name: string, value: any): void {
-        this.setParsedValue(name, value);
-        this.setFormattedValue(name, null);
+    protected fileChangeHandler({ inputHandler, onChange }: InputOptions): ChangeEventHandler {
+        return (event: ChangeEvent<HTMLInputElement>) => {
+            const { name, files } = event.target;
+
+            const valueIsEmpty = files.length == 0;
+            const valid = event.target.checkValidity() && (valueIsEmpty || inputHandler.validate(files));
+            const file = !valueIsEmpty && valid ? inputHandler.parse(files) : null;
+
+            this.setParsedValue(name, file);
+            this.setValidity(name, valid);
+
+            if (onChange && !this.isEqual(file, this.getParsedValue(name))) {
+                onChange(file);
+            }
+        };
     }
 
-    public getParsedValue(name: string) {
-        return get(this.state.values, name);
+    public checkbox(name: string, { onChange, onFocus, onBlur }: CheckboxOptions = {}): CheckboxProps {
+        const checked = !!this.getParsedValue(name);
+
+        return {
+            type: 'checkbox',
+            name,
+            checked,
+            onChange: this.checkboxChangeHandler({ onChange }),
+            onFocus: this.basicFocusHandler({ onFocus }),
+            onBlur: this.basicBlurHandler({ onBlur })
+        };
     }
 
-    public hasParsedValue(name: string) {
-        return has(this.state.values, name);
+    protected checkboxChangeHandler({ onChange }: CheckboxOptions = {}): ChangeEventHandler {
+        return (event: ChangeEvent<HTMLInputElement>) => {
+            const { name } = event.target;
+
+            const checked = !this.getParsedValue(name);
+
+            this.setParsedValue(name, checked);
+            this.setTouched(name, true);
+            this.setValidity(name, true);
+
+            if (onChange) {
+                onChange(checked);
+            }
+        };
     }
 
-    public setParsedValue(name: string, value: any) {
+    public radio(name: string, value: any, { key, onChange, onFocus, onBlur }: RadioOptions = {}): RadioProps {
+        return {
+            type: 'radio',
+            name,
+            checked: this.isEqual(this.getParsedValue(name), value, key),
+            onChange: this.radioChangeHandler({ value, onChange }),
+            onFocus: this.basicFocusHandler({ onFocus }),
+            onBlur: this.basicBlurHandler({ onBlur })
+        };
+    }
+
+    protected radioChangeHandler({ value, onChange }: RadioOptions = {}): ChangeEventHandler {
+        return (event: ChangeEvent<HTMLInputElement>) => {
+            const { name } = event.target;
+
+            this.setParsedValue(name, value);
+            this.setTouched(name, true);
+            this.setValidity(name, true);
+
+            if (onChange) {
+                onChange(value);
+            }
+        };
+    }
+
+    public checklist(name: string, value: any, { key, onChange, onFocus, onBlur }: ChecklistOptions = {}): CheckboxProps {
+        return {
+            type: 'checkbox',
+            name,
+            checked: this.contains(this.getParsedValue(name) || [], value, key),
+            onChange: this.checklistChangeHandler({ value, key, onChange }),
+            onFocus: this.basicFocusHandler({ onFocus }),
+            onBlur: this.basicBlurHandler({ onBlur })
+        };
+    }
+
+    protected checklistChangeHandler({ value, key, onChange }: ChecklistOptions = {}): ChangeEventHandler {
+        return (event: ChangeEvent<HTMLInputElement>) => {
+            const { name } = event.target;
+
+            const list = this.getParsedValue(name) || [];
+            const index = this.findIndex(list, value, key);
+
+            if (index > -1) {
+                this.delete(name, index);
+            } else {
+                this.append(name, value);
+            }
+
+            this.setTouched(name, true);
+            this.setValidity(name, true);
+
+            if (onChange) {
+                onChange(value);
+            }
+        };
+    }
+
+    public select(name: string, options?: any[], { onChange, onFocus, onBlur }: SelectOptions = {}): SelectProps {
+        const value = this.getParsedValue(name);
+
+        return {
+            name,
+            value: options ? this.findIndex(options, value) : value,
+            onChange: this.selectChangeHandler({ options, onChange }),
+            onFocus: this.basicFocusHandler({ onFocus }),
+            onBlur: this.basicBlurHandler({ onBlur })
+        };
+    }
+
+    protected selectChangeHandler({ options, onChange }: SelectOptions = {}): ChangeEventHandler {
+        return (event: ChangeEvent<HTMLSelectElement>) => {
+            const { name, value } = event.target;
+
+            const parsedValue = options ? options[parseInt(value) || 0] : value;
+
+            this.setParsedValue(name, parsedValue);
+            this.setTouched(name, true);
+            this.setValidity(name, true);
+
+            if (onChange) {
+                onChange(parsedValue);
+            }
+        };
+    }
+
+    public option(value: string | string[] | number): OptionProps {
+        return {
+            value,
+            key: value + ''
+        };
+    }
+
+    public set(name: string, value: any): void {
+        this.setState((state: FormState) => {
+            set(state.values, name, value);
+            unset(state.formattedValues, name);
+            unset(state.valid, name);
+
+            return { ...state };
+        });
+    }
+
+    public getParsedValue(name: string): any {
+        return get(this.state.values, name, null);
+    }
+
+    public hasParsedValue(name: string): boolean {
+        return this.getParsedValue(name) !== null;
+    }
+
+    public setParsedValue(name: string, value: any): void {
         this.setState((state: FormState) => {
             return {
                 ...state,
@@ -150,23 +395,23 @@ export default class FormManager {
         });
     }
 
-    public getInitialValue(name: string) {
+    public getInitialValue(name: string): any {
         return get(this.state.initialValues, name, null);
     }
 
-    public hasInitialValue(name: string) {
+    public hasInitialValue(name: string): boolean {
         return has(this.state.initialValues, name);
     }
 
-    public getFormattedValue(name: string) {
-        return get(this.state.formattedValues, name);
+    public getFormattedValue(name: string): string {
+        return get(this.state.formattedValues, name, null);
     }
 
-    public hasFormattedValue(name: string) {
+    public hasFormattedValue(name: string): boolean {
         return has(this.state.formattedValues, name);
     }
 
-    public setFormattedValue(name: string, value: any) {
+    public setFormattedValue(name: string, value: any): void {
         this.setState((state: FormState) => {
             return {
                 ...state,
@@ -175,11 +420,11 @@ export default class FormManager {
         });
     }
 
-    public isValid(name: string) {
-        return get(this.state.valid, name);
+    public isValid(name: string): boolean {
+        return get(this.state.valid, name, null) || !has(this.state.valid, name);
     }
 
-    public setValidity(name: string, valid: boolean) {
+    public setValidity(name: string, valid: boolean): void {
         this.setState((state: FormState) => {
             return {
                 ...state,
@@ -188,25 +433,24 @@ export default class FormManager {
         });
     }
 
-    public touched(name: string) {
-        return has(this.state.formattedValues, name);
+    public getTouched(name: string): boolean {
+        return get(this.state.touched, name, null);
     }
 
-    public changed(name?: string): boolean {
-        return !isEqual(this.getParsedValue(name), this.getInitialValue(name));
-    }
-
-    public set(name: string, value: any): void {
+    public setTouched(name: string, touched: boolean): void {
         this.setState((state: FormState) => {
-            set(state.values, name, value);
-            unset(state.formattedValues, name);
-            set(state.valid, name, true);
-
-            return { ...state };
+            return {
+                ...state,
+                touched: set(state.touched, name, touched)
+            } as FormState;
         });
     }
 
-    public prepend(name: string, value: any): any {
+    public changed(name?: string): boolean {
+        return !this.isEqual(this.getParsedValue(name), this.getInitialValue(name));
+    }
+
+    public prepend(name: string, value: any): void {
         this.setState((state: FormState) => {
             set(state.values, name, [value, ...get(state.values, name, [])]);
             set(state.formattedValues, name, [null, ...get(state.formattedValues, name, [])]);
@@ -216,7 +460,7 @@ export default class FormManager {
         });
     }
 
-    public append(name: string, value: any): any {
+    public append(name: string, value: any): void {
         this.setState((state: FormState) => {
             set(state.values, name, [...get(state.values, name, []), value]);
 
@@ -236,7 +480,7 @@ export default class FormManager {
         this.swap(`${prefix}${index}`, `${prefix}${index + 1}`);
     }
 
-    public swap(first: string, second: string): any {
+    public swap(first: string, second: string): void {
         this.setState((state: FormState) => {
             const value = get(state.values, first);
             const formattedValue = get(state.formattedValues, first);
@@ -256,9 +500,17 @@ export default class FormManager {
 
     public splice(name: string, index: number, count: number): void {
         this.setState((state: FormState) => {
-            get(state.values, name, []).splice(index, count);
-            get(state.formattedValues, name, []).splice(index, count);
-            get(state.valid, name, []).splice(index, count);
+            const lists = [
+                get(state.values, name),
+                get(state.formattedValues, name),
+                get(state.valid, name)
+            ];
+
+            lists.map((list: any) => {
+                if (isArray(list)) {
+                    list.splice(index, count);
+                }
+            });
 
             return { ...state };
         });
@@ -296,39 +548,124 @@ export default class FormManager {
             unset(state.valid, name);
 
             return { ...state };
-        })
+        });
     }
 
-    public getState(): FormState {
-        return this.state;
+    public isEqual(a: any, b: any, key?: string | number): boolean {
+        if (typeof key != 'undefined') {
+            return isEqual(a[key], b[key]);
+        }
+
+        return isEqual(a, b);
     }
 
-    protected isEmpty(value: any): boolean {
+    public findIndex(list: any[], value: any, key?: string | number): number {
+        let index = -1;
+
+        list.map((item: any, i: number) => {
+            if (this.isEqual(item, value, key)) {
+                index = i;
+            }
+        });
+
+        return index;
+    }
+
+    public contains(list: any[], value: any, key?: string | number): boolean {
+        return this.findIndex(list, value, key) > -1;
+    }
+
+    public isEmpty(value: any): boolean {
         return typeof value == 'undefined' || value === '' || value === null;
     }
-}
-
-export interface FieldProps extends InputProps {
-    type: string;
-    name: string;
-    value: string;
-    onChange: ChangeEventHandler<HTMLInputElement>;
-    onFocus: FocusEventHandler<HTMLInputElement>;
-    onBlur: FocusEventHandler<HTMLInputElement>;
 }
 
 export interface FormState {
     values: any;
     initialValues: any;
     formattedValues: any;
+    touched: any;
     valid: any;
 }
 
-export interface FieldOptions<T=any> {
+export interface InputOptions<T=any> {
     type?: string;
     name?: string;
+    inputHandler?: InputHandler<T>;
     onChange?: (value: T | null) => any;
     onFocus?: (value: T | null) => any;
     onBlur?: (value: T | null) => any;
-    inputHandler?: InputHandler<T>;
+}
+
+export interface CheckboxOptions<T=any> {
+    onChange?: (value: T | null) => any;
+    onFocus?: (value: T | null) => any;
+    onBlur?: (value: T | null) => any;
+}
+
+export interface RadioOptions<T=any> extends CheckboxOptions {
+    value?: T;
+    key?: string | number;
+}
+
+export interface ChecklistOptions<T=any> extends CheckboxOptions {
+    value?: T;
+    key?: string | number;
+}
+
+export interface TextareaOptions {
+    name?: string;
+    inputHandler?: InputHandler<string>;
+    onChange?: (value: string) => any;
+    onFocus?: (value: string) => any;
+    onBlur?: (value: string) => any;
+}
+
+export interface SelectOptions<T=any> {
+    options?: T[];
+    onChange?: (value: T | null) => any;
+    onFocus?: (value: T | null) => any;
+    onBlur?: (value: T | null) => any;
+}
+
+export interface InputProps extends DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement> {
+    type: string;
+    name: string;
+    value?: string | string[] | number;
+    onChange: ChangeEventHandler<HTMLInputElement>;
+    onFocus: FocusEventHandler<HTMLInputElement>;
+    onBlur: FocusEventHandler<HTMLInputElement>;
+}
+
+export interface CheckboxProps extends InputProps {
+    checked: boolean;
+}
+
+export interface RadioProps extends InputProps {
+    checked: boolean;
+}
+
+export interface ChecklistProps extends InputProps {
+    checked: boolean;
+}
+
+export interface TextareaProps extends DetailedHTMLProps<TextareaHTMLAttributes<HTMLTextAreaElement>, HTMLTextAreaElement> {
+    name: string;
+    value: string | string[] | number;
+    onChange: ChangeEventHandler<HTMLTextAreaElement>;
+    onFocus: FocusEventHandler<HTMLTextAreaElement>;
+    onBlur: FocusEventHandler<HTMLTextAreaElement>;
+}
+
+export interface SelectProps extends DetailedHTMLProps<SelectHTMLAttributes<HTMLSelectElement>, HTMLSelectElement> {
+    name: string;
+    value: string | string[] | number;
+    onChange: ChangeEventHandler<HTMLSelectElement>;
+    onFocus: FocusEventHandler<HTMLSelectElement>;
+    onBlur: FocusEventHandler<HTMLSelectElement>;
+}
+
+export interface OptionProps extends DetailedHTMLProps<OptionHTMLAttributes<HTMLOptionElement>, HTMLOptionElement> {
+    value: string | string[] | number;
+    key: Key;
 }
