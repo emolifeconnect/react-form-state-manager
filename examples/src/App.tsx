@@ -3,113 +3,117 @@ import React from 'react';
 import { floatHandler, InputHandler } from '../../src/InputHandlers';
 import useForm from '../../src/useForm';
 
+// Custom input handler that converts euros to cents internally, and nicely formats the amount externally.
 const moneyInput = (rules: any = {}) => {
     return {
         inputHandler: {
             ...floatHandler,
             parse: (value) => {
+                // Represent euros in cents
                 const floatValue = parseFloat(value);
 
                 return !isNaN(floatValue) ? Math.round(floatValue * 100) : null;
             },
             format: (value) => {
+                // Divide internal value by 100 to get euros and add 2 decimals
                 return (value / 100).toFixed(2);
             },
             validate: (value) => {
-                return value <= rules.max;
+                return value >= rules.min;
             }
         } as InputHandler<number>
     };
 };
 
 const App = () => {
-    const form = useForm({
-        values: {
-            posts: [
-            ],
-            fruits: [
-            ],
+    const categories = [
+        {
+            id: 1,
+            title: 'State management'
+        },
+        {
+            id: 2,
+            title: 'Hooks'
+        },
+        {
+            id: 3,
+            title: 'Forms'
         }
+    ];
+
+    const product = {
+        title: 'React form state manager',
+        description: 'Description',
+        amount: 1000, // 1000 cents = 10 euros
+        category: {
+            id: 2
+        },
+        manufacturer: {
+            name: 'TypeScript'
+        },
+        tags: ['react']
+    };
+
+    const form = useForm({
+        values: product
     });
 
     return <form>
-        <label>Custom money field</label>
-        <input {...form.text('amount', moneyInput({ max: 100000 }))} placeholder="Money" required />
-        <button type="button" onClick={() => form.set('amount', 100)}>1 euro</button>
-        <button type="button" onClick={() => form.reset('amount')} disabled={!form.changed('amount')}>Reset</button>
+        <p>
+            <label>Title</label>
+            <input {...form.text('title')} required />
+        </p>
 
-        <hr />
+        <p>
+            <label>Description</label>
+            <textarea {...form.textarea('description')} required></textarea>
+        </p>
 
-        <input {...form.search('search')} placeholder="Search" />
+        <p>
+            <label>Amount</label>
+            <input {...form.text('amount', moneyInput(0))} required />
+        </p>
 
-        <hr />
+        <p>
+            <label>Manufacturer</label>
+            <input {...form.text('manufacturer.name')} required />
+        </p>
 
-        <textarea {...form.textarea('content')}></textarea>
+        <p>
+            <label>Category</label>
+            <select {...form.select('category', categories, { key: 'id' })}>
+                {categories.map((category: any, index: number) => (
+                    <option {...form.option(index)}>{category.title}</option>
+                ))}
+            </select>
+        </p>
 
-        <hr />
+        <p>
+            <label>Tags</label>
+            {form.values.tags.map((tag: string, index: number) => <div key={index}>
+                <input {...form.text(`tags.${index}`)} required />
+                <button type="button" onClick={() => form.delete('tags', index)}>Delete</button>
+                <button type="button" onClick={() => form.moveUp('tags', index)} disabled={index == 0}>Move up</button>
+                <button type="button" onClick={() => form.moveDown('tags', index)} disabled={index == form.values.tags.length - 1}>Move down</button>
+            </div>)}
 
-        <input {...form.file('file', { onChange: console.log })} multiple />
-
-        <hr />
-
-        <input {...form.month('month', { onChange: console.log })} />
-
-        <hr />
-
-        <button type="button" onClick={() => form.prepend('posts', {})}>Prepend</button>
-
-        <hr />
-
-        {form.values.posts.map((post: any, index: number) => <div key={index}>
-            <input {...form.text(`posts.${index}.title`)} minLength={3} />
-            <button type="button" onClick={() => form.moveUp('posts', index)} disabled={index == 0}>Move up</button>
-            <button type="button" onClick={() => form.moveDown('posts', index)} disabled={index == form.values.posts.length - 1}>Move down</button>
-            <button type="button" onClick={() => form.delete('posts', index)}>Delete</button>
-        </div>)}
-
-        <hr />
-
-        <button type="button" onClick={() => form.append('posts', {})}>Append</button>
-
-        <hr />
+            <button type="button" onClick={() => form.append('tags', '')}>Add</button>
+        </p>
 
         <button type="button" onClick={() => form.reset()}>Reset all</button>
 
-        <hr />
-
-        <input {...form.checkbox('subscribe')} /> Subscribe
-
-        <hr />
-
-        <input {...form.radio('radio', { title: 'foo' })} /> Foo
-        <input {...form.radio('radio', { title: 'bar' })} /> Bar
-
-        <button type="button" onClick={() => form.set('radio', 'foo')}>Foo</button>
-
-        <hr />
-
-        <input {...form.checklist('fruits', { title: 'apple' }, { key: 'title' })} /> Apple
-        <input {...form.checklist('fruits', { title: 'banana' }, { key: 'title' })} /> Banana
-        <input {...form.checklist('fruits', { title: 'orange' }, { key: 'title' })} /> Orange
-
-        <hr />
-
-        <select {...form.select('device', [null, { type: 'phone' }, { type: 'desktop' }])}>
-            <option {...form.option(0)}></option>
-            <option {...form.option(1)}>Phone</option>
-            <option {...form.option(2)}>Desktop</option>
-        </select>
+        <button type="submit">Edit product</button>
 
         <hr />
 
         <pre>
-            {JSON.stringify(form.values, null, 2)}
-        </pre>
-
-        <pre>
-            {JSON.stringify(form.valid, null, 2)}
+            {JSON.stringify(form.values, null ,2)}
+            <br /><br />
+            {JSON.stringify(form.formattedValues, null ,2)}
+            <br /><br />
+            {JSON.stringify(form.valid, null ,2)}
         </pre>
     </form>
-}
+};
 
 export default App;

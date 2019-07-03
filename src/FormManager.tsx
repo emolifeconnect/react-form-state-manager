@@ -333,12 +333,12 @@ export default class FormManager {
         };
     }
 
-    public select(name: string, options?: any[], { onChange, onFocus, onBlur }: SelectOptions = {}): SelectProps {
+    public select(name: string, options?: any[], { key, onChange, onFocus, onBlur }: SelectOptions = {}): SelectProps {
         const value = this.getParsedValue(name);
 
         return {
             name,
-            value: options ? this.findIndex(options, value) : value,
+            value: options ? this.findIndex(options, value, key) : value,
             onChange: this.selectChangeHandler({ options, onChange }),
             onFocus: this.basicFocusHandler({ onFocus }),
             onBlur: this.basicBlurHandler({ onBlur })
@@ -400,7 +400,7 @@ export default class FormManager {
     }
 
     public hasInitialValue(name: string): boolean {
-        return has(this.state.initialValues, name);
+        return this.getInitialValue(name) !== null;
     }
 
     public getFormattedValue(name: string): string {
@@ -408,7 +408,7 @@ export default class FormManager {
     }
 
     public hasFormattedValue(name: string): boolean {
-        return has(this.state.formattedValues, name);
+        return this.getFormattedValue(name) !== null;
     }
 
     public setFormattedValue(name: string, value: any): void {
@@ -623,6 +623,7 @@ export interface TextareaOptions {
 
 export interface SelectOptions<T=any> {
     options?: T[];
+    key?: string | number;
     onChange?: (value: T | null) => any;
     onFocus?: (value: T | null) => any;
     onBlur?: (value: T | null) => any;
