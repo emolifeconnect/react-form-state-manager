@@ -1,4 +1,4 @@
-# Ract form state manager
+# React form state manager
 
 React hook for managing (nested) form states. This package aims to be unopinionated and contains no components, fetch wrappers, error handling, etc., just functionality that makes managing form state easier.
 
