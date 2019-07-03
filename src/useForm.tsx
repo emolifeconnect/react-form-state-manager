@@ -16,12 +16,14 @@ export interface InitialFormState {
 }
 
 const useForm = (initialState: InitialFormState = {}) => {
+    const emptyValue = () => isArray(initialState.values) ? [] : {};
+
     const defaultState: FormState = {
-        values: cloneDeep(initialState.values),
-        initialValues: cloneDeep(initialState.values) || {},
-        formattedValues: isArray(initialState.values) ? [] : {},
-        touched: isArray(initialState.values) ? [] : {},
-        valid: isArray(initialState.values) ? [] : {}
+        values: cloneDeep(initialState.values) || emptyValue(),
+        initialValues: cloneDeep(initialState.initialValues || initialState.values) || emptyValue(),
+        formattedValues: emptyValue(),
+        touched: emptyValue(),
+        valid: emptyValue()
     };
 
     const [state, setState] = useState(defaultState);

@@ -60,27 +60,27 @@ const App = () => {
 
     return <form>
         <p>
-            <label>Title</label>
+            <label>Title</label><br />
             <input {...form.text('title')} required />
         </p>
 
         <p>
-            <label>Description</label>
+            <label>Description</label><br />
             <textarea {...form.textarea('description')} required></textarea>
         </p>
 
         <p>
-            <label>Amount</label>
+            <label>Amount</label><br />
             <input {...form.text('amount', moneyInput(0))} required />
         </p>
 
         <p>
-            <label>Manufacturer</label>
+            <label>Manufacturer</label><br />
             <input {...form.text('manufacturer.name')} required />
         </p>
 
         <p>
-            <label>Category</label>
+            <label>Category</label><br />
             <select {...form.select('category', categories, { key: 'id' })}>
                 {categories.map((category: any, index: number) => (
                     <option {...form.option(index)}>{category.title}</option>
@@ -89,13 +89,14 @@ const App = () => {
         </p>
 
         <p>
-            <label>Tags</label>
-            {form.values.tags.map((tag: string, index: number) => <div key={index}>
+            <label>Tags</label><br />
+            {form.values.tags.map((tag: string, index: number) => <span key={index}>
                 <input {...form.text(`tags.${index}`)} required />
                 <button type="button" onClick={() => form.delete('tags', index)}>Delete</button>
                 <button type="button" onClick={() => form.moveUp('tags', index)} disabled={index == 0}>Move up</button>
                 <button type="button" onClick={() => form.moveDown('tags', index)} disabled={index == form.values.tags.length - 1}>Move down</button>
-            </div>)}
+                <br />
+            </span>)}
 
             <button type="button" onClick={() => form.append('tags', '')}>Add</button>
         </p>
