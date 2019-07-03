@@ -2,6 +2,8 @@
 
 React hook for managing (nested) form states. This package aims to be unopinionated and contains no components, fetch wrappers, error handling, etc., just functionality that makes managing form state easier.
 
+Tests coming soon.
+
 # Example
 
 Extended example form in which a product can be edited. 
