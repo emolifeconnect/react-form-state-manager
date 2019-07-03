@@ -7,7 +7,6 @@
         "noImplicitAny": true,
         "removeComments": true,
         "preserveConstEnums": true,
-        "sourceMap": true,
         "esModuleInterop": true,
         "outDir": "dist",
         "moduleResolution": "node"
