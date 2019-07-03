@@ -1,11 +1,13 @@
 {
   "name": "react-form-state-manager",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "React hook for managing (nested) form states. This package aims to be unopinionated and contains no components, fetch wrappers, error handling, etc., just functionality that makes managing form state easier.",
   "private": false,
   "main": "dist/index.js",
   "module": "dist/index.es.js",
   "types": "dist/index.d.ts",
+  "repository": "emolifeconnect/react-form-state-manager",
+  "homepage": "https://github.com/emolifeconnect/react-form-state-manager",
   "scripts": {
     "build": "./node_modules/typescript/bin/tsc",
     "test": "./node_modules/.bin/jest"
