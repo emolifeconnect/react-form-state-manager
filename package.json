@@ -1,7 +1,7 @@
 {
   "name": "react-form-state-manager",
   "version": "1.0.2",
-  "description": "Manage form state",
+  "description": "React hook for managing (nested) form states. This package aims to be unopinionated and contains no components, fetch wrappers, error handling, etc., just functionality that makes managing form state easier.",
   "private": false,
   "main": "dist/index.js",
   "module": "dist/index.es.js",
@@ -13,6 +13,7 @@
   "files": [
     "dist"
   ],
+  "keywords": ["react", "form", "forms", "state", "hook", "hooks", "management", "typescript"],
   "dependencies": {
     "@types/lodash": "^4.14.135",
     "lodash": "^4.17.11"
