@@ -4,13 +4,33 @@ React hook for managing (nested) form states. This package aims to be unopiniona
 
 Tests coming soon.
 
-# Example
+# Installation
 
-Extended example form in which a product can be edited. 
+```
+npm i react-form-state-manager
+```
+
+# Usage
+
+```jsx
+import { useForm } from 'react-form-state-manager';
+
+const ProductForm = () => {
+    const form = useForm();
+    
+    return <div>
+        <input {...form.text('title')} />
+    </div>
+};
+```
+
+# Extended example
+
+Extended example form in which a product with nested properties can be edited. 
 
 See https://github.com/emolifeconnect/react-form-state-manager/blob/master/examples/src/App.tsx.
 
-```jsx
+```tsx
 // Custom input handler that converts euros to cents internally, and nicely formats the amount externally.
 const moneyInput = (rules: any = {}) => {
     return {
