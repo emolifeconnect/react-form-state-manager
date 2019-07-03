@@ -118,7 +118,7 @@ const App = () => {
 
 The form state looks as follows
 
-### `form.values`:
+### `form.values`
 
 ```json
 {
