@@ -17,7 +17,7 @@ import { useForm } from 'react-form-state-manager';
 
 const ProductForm = () => {
     const form = useForm();
-    
+
     return <div>
         <input {...form.text('title')} />
     </div>
@@ -26,7 +26,7 @@ const ProductForm = () => {
 
 # Extended example
 
-Extended example form in which a product with nested properties can be edited. 
+Extended example form in which a product with nested properties can be edited.
 
 See https://github.com/emolifeconnect/react-form-state-manager/blob/master/examples/src/App.tsx.
 
@@ -35,7 +35,7 @@ See https://github.com/emolifeconnect/react-form-state-manager/blob/master/examp
 const moneyInput = (rules: any = {}) => {
     return {
         inputHandler: {
-            ...floatHandler,
+            ...numberHandler,
             parse: (value) => {
                 // Represent euros in cents
                 const floatValue = parseFloat(value);
@@ -69,7 +69,7 @@ const App = () => {
             title: 'Forms'
         }
     ];
-    
+
     // The product we want to edit
     const product = {
         title: 'React form state manager',

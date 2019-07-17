@@ -7,10 +7,10 @@ import useForm from '../src/useForm';
 
 configure({ adapter: new Adapter });
 
-const StringInput = (props: any) => {
+const StringInput = ({ onChange }: any) => {
     const form = useForm();
 
-    return <input {...form.text('test', props)} />;
+    return <input {...form.text('test', { onChange })} />;
 };
 
 interface PropsInterface {

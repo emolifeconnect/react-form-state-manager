@@ -4,7 +4,7 @@ import {
     OptionHTMLAttributes, SelectHTMLAttributes, TextareaHTMLAttributes
 } from 'react';
 
-import { basicHandler, fileHandler, floatHandler, InputHandler } from './InputHandlers';
+import { basicHandler, fileHandler, InputHandler, numberHandler } from './InputHandlers';
 
 export default class FormManager {
     public values: any = {};
@@ -38,7 +38,7 @@ export default class FormManager {
     public number(name: string, options: InputOptions = {}): InputProps {
         options.name = name;
         options.type = 'number';
-        options.inputHandler = merge({}, floatHandler, options.inputHandler);
+        options.inputHandler = merge({}, numberHandler, options.inputHandler);
 
         return this.input(options);
     }
@@ -180,13 +180,13 @@ export default class FormManager {
             const valueIsEmpty = this.isEmpty(value);
             const valid = event.target.checkValidity() && ((valueIsEmpty && !required) || (!valueIsEmpty && inputHandler.validate(parsedValue)));
 
-            this.setParsedValue(name, parsedValue);
-            this.setFormattedValue(name, value);
-            this.setValidity(name, valid);
-
             if (onChange && !this.isEqual(parsedValue, this.getParsedValue(name))) {
                 onChange(parsedValue);
             }
+
+            this.setParsedValue(name, parsedValue);
+            this.setFormattedValue(name, value);
+            this.setValidity(name, valid);
         };
     }
 

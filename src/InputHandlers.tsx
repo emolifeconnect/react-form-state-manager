@@ -20,7 +20,7 @@ export const basicHandler: InputHandler = {
     }
 };
 
-export const floatHandler: InputHandler<number> = {
+export const numberHandler: InputHandler<number> = {
     filter: value => {
         return value.match("[0-9\.-]*")[0];
     },

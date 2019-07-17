@@ -26,25 +26,25 @@
     "typescript"
   ],
   "dependencies": {
-    "@types/lodash": "^4.14.135",
-    "lodash": "^4.17.11"
+    "@types/lodash": "^4.14.136",
+    "lodash": "^4.17.14"
   },
   "devDependencies": {
-    "@types/enzyme": "^3.10.1",
+    "@types/enzyme": "^3.10.3",
     "@types/enzyme-adapter-react-16": "^1.0.5",
     "@types/jest": "^24.0.15",
+    "@types/react": "^16.8.23",
+    "@types/react-dom": "^16.8.4",
     "enzyme": "^3.10.0",
     "enzyme-adapter-react-16": "^1.14.0",
     "jest": "^24.8.0",
-    "rollup": "^1.16.4",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6",
+    "rollup": "^1.17.0",
     "rollup-plugin-babel": "^4.3.3",
     "rollup-plugin-tsx": "^1.0.2",
     "ts-jest": "^24.0.2",
-    "typescript": "^3.5.2",
-    "@types/react": "^16.8.22",
-    "@types/react-dom": "^16.8.4",
-    "react": "^16.8.6",
-    "react-dom": "^16.8.6"
+    "typescript": "^3.5.3"
   },
   "peerDependencies": {
     "lodash": "^4.17.11",
