@@ -1,9 +1,4 @@
-import { configure, mount, ReactWrapper, shallow } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
-import React from 'react';
-
-import { basicHandler, numberHandler } from '../src/InputHandlers';
-import useForm from '../src/useForm';
+import { basicHandler, fileHandler, numberHandler } from '../src/InputHandlers';
 
 describe('basicHandler', () => {
     it('should filter', () => {
@@ -32,11 +27,41 @@ describe('numberHandler', () => {
         expect(numberHandler.parse('-1.2')).toBe(-1.2);
     });
 
+    it('should parse', () => {
+        expect(numberHandler.parse('foo')).toBe(null);
+    });
+
     it('should format', () => {
         expect(numberHandler.format(-1.2)).toBe('-1.2');
     });
 
     it('should validate', () => {
         expect(numberHandler.validate(-1.2)).toBe(true);
+    });
+});
+
+describe('fileHandler', () => {
+    const file: File = {
+        ...new Blob([''], { type: 'text/html' }),
+        lastModified: 123,
+        name: 'foo'
+    };
+
+    const singleFileList = {
+        0: file,
+        length: 1,
+        item: (index: number) => file
+    };
+
+    const multiFileList = {
+        0: file,
+        1: file,
+        length: 2,
+        item: (index: number) => file
+    };
+
+    it('should parse', () => {
+        expect(fileHandler.parse(singleFileList)).toBe(file);
+        expect(fileHandler.parse(multiFileList)).toBe(multiFileList);
     });
 });

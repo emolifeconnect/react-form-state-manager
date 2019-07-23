@@ -5,6 +5,99 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Form Examples</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            margin: 0;
+        }
+
+        body, input, select, textarea, button {
+            font: 14px/1.5 Helvetica, Arial, sans-serif;
+            color: #333;
+        }
+
+        .container {
+            display: flex;
+            min-width: 960px;
+            padding: 30px;
+        }
+
+        .container > * {
+            flex: 1;
+            min-width: 500px;
+        }
+
+        select, input[type="text"], textarea, button {
+            padding: 5px;
+            background: white;
+            border: 1px solid #d6d6d6;
+            border-radius: 5px;
+            line-height: 1;
+            display: inline-block;
+        }
+
+        select, input[type="text"], button {
+            height: 36px;
+        }
+
+        select, input[type="text"] {
+            width: 200px;
+        }
+
+        textarea {
+            width: 400px;
+        }
+
+        button {
+            cursor: pointer;
+            border: none;
+            background: #eee;
+            padding: 5px 10px;
+        }
+
+        button:hover {
+            background: #f3f3f3;
+        }
+
+        button[disabled] {
+            opacity: 0.3;
+            cursor: default;
+        }
+
+        button[type="submit"] {
+            background: blue;
+            color: white;
+            border: none;
+            font-weight: bold;
+        }
+
+        button[type="submit"]:hover {
+            background: rgb(46, 46, 255);
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-label {
+            display: block;
+            font-weight: bold;
+        }
+
+        h3 {
+            margin: 0;
+            padding: 0;
+        }
+
+        .form-state {
+            background: #eee;
+            padding: 30px;
+        }
+    </style>
 </head>
 
 <body>

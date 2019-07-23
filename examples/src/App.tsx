@@ -48,73 +48,112 @@ const App = () => {
         category: {
             id: 2
         },
+        categories: [] as any,
         manufacturer: {
             name: 'TypeScript'
         },
-        tags: ['react']
+        tags: ['react'],
+        subscribe: true
     };
 
     const form = useForm({
         values: product
     });
 
-    return <form>
-        <p>
-            <label>Title</label><br />
-            <input {...form.text('title')} required />
-        </p>
+    return <div className="container">
+        <form onSubmit={event => event.preventDefault()}>
+            <div className="input-group">
+                <label className="input-label">Title</label>
+                <input {...form.text('title')} required />
+            </div>
 
-        <p>
-            <label>Description</label><br />
-            <textarea {...form.textarea('description')} required></textarea>
-        </p>
+            <div className="input-group">
+                <label className="input-label">Description</label>
+                <textarea {...form.textarea('description')} rows={5} required></textarea>
+            </div>
 
-        <p>
-            <label>Amount</label><br />
-            <input {...form.text('amount', moneyInput(0))} required />
-        </p>
+            <div className="input-group">
+                <label className="input-label">Amount (min. 0)</label>
+                <input {...form.text('amount', moneyInput({ min: 0 }))} required />
+            </div>
 
-        <p>
-            <label>Manufacturer</label><br />
-            <input {...form.text('manufacturer.name')} required />
-        </p>
+            <div className="input-group">
+                <label className="input-label">Manufacturer</label>
+                <input {...form.text('manufacturer.name')} required />
+            </div>
 
-        <p>
-            <label>Category</label><br />
-            <select {...form.select('category', categories, { key: 'id' })}>
-                {categories.map((category: any, index: number) => (
-                    <option {...form.option(index)}>{category.title}</option>
+            <div className="input-group">
+                <label className="input-label">Category</label>
+                <select {...form.select('category', categories, { key: 'id' })}>
+                    {categories.map((category: any, index: number) => (
+                        <option {...form.option(index)}>{category.title}</option>
+                    ))}
+                </select>
+            </div>
+
+            <div className="input-group">
+                <label className="input-label">Category</label>
+                {categories.map((category: any) => (
+                    <span key={category.id}>
+                        <input {...form.radio('category', category, { key: 'id' })} id={`category-${category.id}`} />
+                        <label htmlFor={`category-${category.id}`}>{category.title}</label>
+                        {' '}
+                    </span>
                 ))}
-            </select>
-        </p>
+            </div>
 
-        <p>
-            <label>Tags</label><br />
-            {form.values.tags.map((tag: string, index: number) => <span key={index}>
-                <input {...form.text(`tags.${index}`)} required />
-                <button type="button" onClick={() => form.delete('tags', index)}>Delete</button>
-                <button type="button" onClick={() => form.moveUp('tags', index)} disabled={index == 0}>Move up</button>
-                <button type="button" onClick={() => form.moveDown('tags', index)} disabled={index == form.values.tags.length - 1}>Move down</button>
-                <br />
-            </span>)}
+            <div className="input-group">
+                <label className="input-label">Categories</label>
+                {categories.map((category: any) => (
+                    <span key={category.id}>
+                        <input {...form.checklist('categories', category, { key: 'id' })} id={`categories-${category.id}`} />
+                        <label htmlFor={`categories-${category.id}`}>{category.title}</label>
+                        {' '}
+                    </span>
+                ))}
+            </div>
 
-            <button type="button" onClick={() => form.append('tags', '')}>Add</button>
-        </p>
+            <div className="input-group">
+                <label className="input-label">Tags</label>
 
-        <button type="button" onClick={() => form.reset()}>Reset all</button>
+                {form.values.tags.map((tag: string, index: number) => <div style={{ marginBottom: '5px' }} key={index}>
+                    <input {...form.text(`tags.${index}`)} required />
+                    {' '}
+                    <button type="button" onClick={() => form.delete('tags', index)}>Delete</button>
+                    {' '}
+                    <button type="button" onClick={() => form.moveUp('tags', index)} disabled={index == 0}>Move up</button>
+                    {' '}
+                    <button type="button" onClick={() => form.moveDown('tags', index)} disabled={index == form.values.tags.length - 1}>Move down</button>
+                    <br />
+                </div>)}
+            </div>
 
-        <button type="submit">Edit product</button>
+            <div className="input-group">
+                <button type="button" onClick={() => form.append('tags', '')}>Add tag</button>
+            </div>
 
-        <hr />
+            <div className="input-group">
+                <input {...form.checkbox('subscribe')} id="subscribe" />
+                {' '}
+                <label htmlFor="subscribe">Newsletter</label>
+            </div>
 
-        <pre>
-            {JSON.stringify(form.values, null ,2)}
-            <br /><br />
-            {JSON.stringify(form.formattedValues, null ,2)}
-            <br /><br />
-            {JSON.stringify(form.valid, null ,2)}
-        </pre>
-    </form>
+            <button type="button" onClick={() => form.reset()} disabled={!form.changed()}>Reset all</button>
+            {' '}
+            <button type="submit" disabled={!form.changed()}>Save</button>
+        </form>
+
+        <div className="form-state">
+            <h3>Internal values</h3>
+            <pre>{JSON.stringify(form.values, null, 2)}</pre>
+
+            <h3>Formatted values</h3>
+            <pre>{JSON.stringify(form.formattedValues, null, 2)}</pre>
+
+            <h3>Validity</h3>
+            <pre>{JSON.stringify(form.valid, null ,2)}</pre>
+        </div>
+    </div>;
 };
 
 export default App;

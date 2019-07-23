@@ -447,7 +447,11 @@ export default class FormManager {
     }
 
     public changed(name?: string): boolean {
-        return !this.isEqual(this.getParsedValue(name), this.getInitialValue(name));
+        if (typeof name != 'undefined') {
+            return !this.isEqual(this.getParsedValue(name), this.getInitialValue(name));
+        }
+
+        return !this.isEqual(this.state.initialValues || {}, this.state.values || {});
     }
 
     public prepend(name: string, value: any): void {
@@ -552,7 +556,7 @@ export default class FormManager {
     }
 
     public isEqual(a: any, b: any, key?: string | number): boolean {
-        if (typeof key != 'undefined') {
+        if (typeof key != 'undefined' && a !== null && b !== null) {
             return isEqual(a[key], b[key]);
         }
 
