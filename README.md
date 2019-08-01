@@ -36,6 +36,8 @@ Extended example form in which a product with nested properties can be edited.
 
 See https://github.com/emolifeconnect/react-form-state-manager/blob/master/examples/src/App.tsx.
 
+![Form example](https://www.onecommunity.nl/uploads/form-state.png)
+
 ```tsx
 import React from 'react';
 
