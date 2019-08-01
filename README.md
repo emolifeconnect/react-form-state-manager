@@ -8,7 +8,7 @@ React hook for managing (nested) form states. This package aims to be unopiniona
 
 🔥 Utility methods like `append`, `prepend`, `moveUp`, `moveDown`, `delete`, `reset` and more
 
-🔥 Customizable formatting and internal representation (format input value '10' to '€ 10.00' and represent it as `1000` internally)
+🔥 Customizable formatting and internal representation (format input value '10' as '€ 10.00' and represent it as `1000` cents internally)
 
 ## Installation
 
