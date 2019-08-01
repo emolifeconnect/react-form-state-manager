@@ -180,7 +180,7 @@ export default class FormManager {
             const valueIsEmpty = this.isEmpty(value);
             const valid = event.target.checkValidity() && ((valueIsEmpty && !required) || (!valueIsEmpty && inputHandler.validate(parsedValue)));
 
-            if (onChange && !this.isEqual(parsedValue, this.getParsedValue(name))) {
+            if (onChange) {
                 onChange(parsedValue);
             }
 
@@ -240,7 +240,7 @@ export default class FormManager {
             this.setParsedValue(name, file);
             this.setValidity(name, valid);
 
-            if (onChange && !this.isEqual(file, this.getParsedValue(name))) {
+            if (onChange) {
                 onChange(file);
             }
         };
@@ -315,20 +315,22 @@ export default class FormManager {
         return (event: ChangeEvent<HTMLInputElement>) => {
             const { name } = event.target;
 
-            const list = this.getParsedValue(name) || [];
+            const list = cloneDeep(this.getParsedValue(name)) || [];
             const index = this.findIndex(list, value, key);
 
             if (index > -1) {
                 this.delete(name, index);
+                list.splice(index, 1);
             } else {
                 this.append(name, value);
+                list.push(value);
             }
 
             this.setTouched(name, true);
             this.setValidity(name, true);
 
             if (onChange) {
-                onChange(value);
+                onChange(list);
             }
         };
     }
@@ -421,7 +423,7 @@ export default class FormManager {
     }
 
     public isValid(name: string): boolean {
-        return get(this.state.valid, name, null) || !has(this.state.valid, name);
+        return get(this.state.valid, name) || !has(this.state.valid, name);
     }
 
     public setValidity(name: string, valid: boolean): void {
@@ -434,7 +436,7 @@ export default class FormManager {
     }
 
     public getTouched(name: string): boolean {
-        return get(this.state.touched, name, null);
+        return get(this.state.touched, name, false);
     }
 
     public setTouched(name: string, touched: boolean): void {
@@ -456,19 +458,22 @@ export default class FormManager {
 
     public prepend(name: string, value: any): void {
         this.setState((state: FormState) => {
-            set(state.values, name, [value, ...get(state.values, name, [])]);
-            set(state.formattedValues, name, [null, ...get(state.formattedValues, name, [])]);
-            set(state.valid, name, [null, ...get(state.valid, name, [])]);
-
-            return { ...state };
+            return {
+                ...state,
+                values: set(state.values, name, [value, ...get(state.values, name, [])]),
+                formattedValues: set(state.formattedValues, name, [null, ...get(state.formattedValues, name, [])]),
+                touched: set(state.touched, name, [null, ...get(state.touched, name, [])]),
+                valid: set(state.valid, name, [null, ...get(state.valid, name, [])])
+            };
         });
     }
 
     public append(name: string, value: any): void {
         this.setState((state: FormState) => {
-            set(state.values, name, [...get(state.values, name, []), value]);
-
-            return { ...state };
+            return {
+                ...state,
+                values: set(state.values, name, [...get(state.values, name, []), value]),
+            };
         });
     }
 
@@ -488,14 +493,17 @@ export default class FormManager {
         this.setState((state: FormState) => {
             const value = get(state.values, first);
             const formattedValue = get(state.formattedValues, first);
+            const touched = get(state.touched, first);
             const valid = get(state.valid, first);
 
             set(state.values, first, get(state.values, second));
             set(state.formattedValues, first, get(state.formattedValues, second));
+            set(state.touched, first, get(state.touched, second));
             set(state.valid, first, get(state.valid, second));
 
             set(state.values, second, value);
             set(state.formattedValues, second, formattedValue);
+            set(state.touched, second, touched);
             set(state.valid, second, valid);
 
             return { ...state };
@@ -507,6 +515,7 @@ export default class FormManager {
             const lists = [
                 get(state.values, name),
                 get(state.formattedValues, name),
+                get(state.touched, name),
                 get(state.valid, name)
             ];
 
@@ -527,6 +536,7 @@ export default class FormManager {
             this.setState((state: FormState) => {
                 unset(state.values, name);
                 unset(state.formattedValues, name);
+                unset(state.touched, name);
                 unset(state.valid, name);
 
                 return { ...state };
@@ -542,6 +552,7 @@ export default class FormManager {
                     ...state,
                     values: cloneDeep(this.state.initialValues),
                     formattedValues: {},
+                    touched: {},
                     valid: {}
                 };
             }
@@ -549,6 +560,7 @@ export default class FormManager {
             // Reset single value
             set(state.values, name, cloneDeep(get(state.initialValues, name, null)));
             unset(state.formattedValues, name);
+            unset(state.touched, name);
             unset(state.valid, name);
 
             return { ...state };
