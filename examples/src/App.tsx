@@ -1,27 +1,34 @@
 import React from 'react';
 
-import { InputHandler, numberHandler } from '../../src/InputHandlers';
+import { InputHandler } from '../../src/InputHandlers';
 import useForm from '../../src/useForm';
 
 // Custom input handler that converts euros to cents internally, and nicely formats the amount externally.
 const moneyInput = (rules: any = {}) => {
     return {
         inputHandler: {
-            ...numberHandler,
+            filter: (value) => {
+                // Strip everything that is not a digit, period or dash
+                return value.match("[0-9\.-]*")[0];
+            },
             parse: (value) => {
-                // Represent euros in cents
+                // Store the money amount in cents in the state
                 const floatValue = parseFloat(value);
 
                 return !isNaN(floatValue) ? Math.round(floatValue * 100) : null;
             },
             format: (value) => {
-                // Divide internal value by 100 to get euros and add 2 decimals
+                // Divide state value by 100 to get euros and add 2 decimals
                 return (value / 100).toFixed(2);
             },
             validate: (value) => {
+                // Apply our custom validation
                 return value >= rules.min;
             }
-        } as InputHandler<number>
+        } as InputHandler<number>,
+        onChange: (value: Number) => {
+            console.log(`Look, the state value (${value}) is represented in cents!`);
+        }
     };
 };
 

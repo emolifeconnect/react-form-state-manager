@@ -1,7 +1,7 @@
 {
   "name": "react-form-state-manager",
-  "version": "1.1.1",
-  "description": "React hook for managing (nested) form states. This package aims to be unopinionated and contains no components, fetch wrappers, error handling, etc., just functionality that makes managing form state easier.",
+  "version": "1.1.2",
+  "description": "React hook for managing (nested) form states",
   "private": false,
   "main": "dist/index.js",
   "module": "dist/index.es.js",
@@ -40,9 +40,6 @@
     "jest": "^24.8.0",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
-    "rollup": "^1.18.0",
-    "rollup-plugin-babel": "^4.3.3",
-    "rollup-plugin-tsx": "^1.0.2",
     "ts-jest": "^24.0.2",
     "typescript": "^3.5.3"
   },
