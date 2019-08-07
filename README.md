@@ -218,7 +218,7 @@ The `useForm()` hook returns an object with the following methods (besides all i
 |`splice(name: string, index: number, count: number): void`|Splices a list|
 |`delete(name: string, index?: number): void`|Deletes a value (from a list if an index is given)|
 |`reset(name?: string): void`|Resets the entire state, or just a value if a name is given|
-|`isEqual(a: any, b: any, key?: string | number): boolean`|Indicates whether two values are equal|
+|`isEqual(a: any, b: any, key?: string \| number): boolean`|Indicates whether two values are equal|
 
 # Extended example
 
