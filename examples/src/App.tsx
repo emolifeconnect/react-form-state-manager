@@ -2,6 +2,7 @@ import React from 'react';
 
 import { InputHandler } from '../../src/InputHandlers';
 import useForm from '../../src/useForm';
+import CustomField from './CustomField';
 
 // Custom input handler that converts euros to cents internally, and nicely formats the amount externally.
 const moneyInput = (rules: any = {}) => {
@@ -69,9 +70,14 @@ const App = () => {
 
     return <div className="container">
         <form onSubmit={event => event.preventDefault()}>
-            <div className="input-group">
+        <div className="input-group">
                 <label className="input-label">Title</label>
                 <input {...form.text('title')} required />
+            </div>
+
+            <div className="input-group">
+                <label className="input-label">Custom</label>
+                <CustomField onChange={(value) => form.set('title', value)} />
             </div>
 
             <div className="input-group">

@@ -123,7 +123,7 @@ Allow the user to select multiple checkboxes. The values are stored in an array.
 </div>}
 ```
 
-## Custom fields
+## Input handlers
 
 The input handler contains a pipeline that applies filters, formatting, parsing and validation. The pipeline is triggered by typing into the input and ends when the field is blurred. It looks as follows:
 
@@ -174,17 +174,66 @@ const moneyInput = (rules: any = {}) => {
 
 Similar input handlers can be defined for date, time and other inputs when needed.
 
-## Extended example
+## Custom components
+
+Assume your custom component accepts an `onChange` handler:
+
+```tsx
+const CustomField = ({ onChange }: { onChange: (value: any) => any }) => {
+    return <input type="text" onChange={event => onChange(event.target.value)} />;
+};
+```
+
+Use it as follows:
+
+```tsx
+<CustomField onChange={(value) => form.set('title', value)} />
+```
+
+# API
+
+The `useForm()` hook returns an object with the following methods (besides all input types):
+
+|Method|Description|
+|:---|:---|
+|`set(name: string, value: any): void`|Sets an internal value, unsets the formatted value and validity|
+|`getParsedValue(name: string): any`|Retrieves a parsed value from the internal state|
+|`hasParsedValue(name: string): boolean`|Indicates whether the internal state contains a value|
+|`setParsedValue(name: string, value: any): void`|Sets a value in the internal state|
+|`getInitialValue(name: string): any`|Retrieves an initial value|
+|`hasInitialValue(name: string): boolean`|Indicates whether the form contains an initial value|
+|`getFormattedValue(name: string): string`|Retrieves a formatted value from the external state|
+|`hasFormattedValue(name: string): boolean`|Indicates whether the external state contains a value|
+|`setFormattedValue(name: string, value: any): void`|Sets a formatted value in the external state|
+|`isValid(name: string): boolean`|Indicates whether a value is valid|
+|`setValidity(name: string, valid: boolean): void`|Sets the validity of a value|
+|`getTouched(name: string): boolean`|Indicate whether a field has been touched|
+|`setTouched(name: string, touched: boolean): void`|Sets the touched state of a field|
+|`changed(name?: string): boolean`|Indicates whether a value is different from its initial value|
+|`prepend(name: string, value: any): void`|Prepends a value to a list|
+|`append(name: string, value: any): void`|Appends a value to a list|
+|`moveUp(name: string, index: number): void`|Moves a value up in a list|
+|`moveDown(name: string, index: number): void`|Moves a value down in a list|
+|`swap(first: string, second: string): void`|Swaps to values in a list|
+|`splice(name: string, index: number, count: number): void`|Splices a list|
+|`delete(name: string, index?: number): void`|Deletes a value (from a list if an index is given)|
+|`reset(name?: string): void`|Resets the entire state, or just a value if a name is given|
+|`isEqual(a: any, b: any, key?: string | number): boolean`|Indicates whether two values are equal|
+
+# Extended example
 
 Extended example form in which a product with nested properties can be edited.
 
 See https://github.com/emolifeconnect/react-form-state-manager/blob/master/examples/src/App.tsx.
 
-![Form example](https://www.onecommunity.nl/uploads/form-state-2.png)
+![Form example](https://www.onecommunity.nl/uploads/form-state-3.png)
 
 ```tsx
 import React from 'react';
-import { useForm, numberHandler, InputHandler } from 'react-form-state-manager';
+
+import { InputHandler } from '../../src/InputHandlers';
+import useForm from '../../src/useForm';
+import CustomField from './CustomField';
 
 // Custom input handler that converts euros to cents internally, and nicely formats the amount externally.
 const moneyInput = (rules: any = {}) => {
@@ -252,9 +301,14 @@ const App = () => {
 
     return <div className="container">
         <form onSubmit={event => event.preventDefault()}>
-            <div className="input-group">
+        <div className="input-group">
                 <label className="input-label">Title</label>
                 <input {...form.text('title')} required />
+            </div>
+
+            <div className="input-group">
+                <label className="input-label">Custom</label>
+                <CustomField onChange={(value) => form.set('title', value)} />
             </div>
 
             <div className="input-group">
@@ -362,12 +416,22 @@ The form state looks as follows
     "id": 2,
     "title": "Hooks"
   },
-  "categories": [],
+  "categories": [
+    {
+      "id": 1,
+      "title": "State management"
+    },
+    {
+      "id": 2,
+      "title": "Hooks"
+    }
+  ],
   "manufacturer": {
     "name": "TypeScript"
   },
   "tags": [
-    "react"
+    "react",
+    "form"
   ],
   "subscribe": true
 }
@@ -377,14 +441,15 @@ The form state looks as follows
 
 ```json
 {
-  "title": "React form state manager",
   "description": "Description",
+  "title": "React form state manager",
   "amount": "10.00",
   "manufacturer": {
     "name": "TypeScript"
   },
   "tags": [
-    "react"
+    "react",
+    "form"
   ]
 }
 ```
@@ -393,8 +458,8 @@ The form state looks as follows
 
 ```json
 {
-  "title": true,
   "description": true,
+  "title": true,
   "amount": true,
   "manufacturer": {
     "name": true
@@ -402,6 +467,7 @@ The form state looks as follows
   "category": true,
   "categories": true,
   "tags": [
+    true,
     true
   ],
   "subscribe": true
