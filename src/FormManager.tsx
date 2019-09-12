@@ -1,7 +1,7 @@
 import { cloneDeep, get, has, isArray, isEqual, merge, set, unset } from 'lodash';
 import {
-    ChangeEvent, ChangeEventHandler, DetailedHTMLProps, FocusEvent, FocusEventHandler, InputHTMLAttributes, Key,
-    OptionHTMLAttributes, SelectHTMLAttributes, TextareaHTMLAttributes
+    ChangeEvent, ChangeEventHandler, DetailedHTMLProps, FocusEvent, FocusEventHandler, Key, OptionHTMLAttributes,
+    SelectHTMLAttributes
 } from 'react';
 
 import { basicHandler, fileHandler, InputHandler, numberHandler } from './InputHandlers';
@@ -645,7 +645,7 @@ export interface SelectOptions<T=any> {
     onBlur?: (value: T | null) => any;
 }
 
-export interface InputProps extends DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement> {
+export interface InputProps {
     type: string;
     name: string;
     value?: string | string[] | number;
@@ -666,7 +666,7 @@ export interface ChecklistProps extends InputProps {
     checked: boolean;
 }
 
-export interface TextareaProps extends DetailedHTMLProps<TextareaHTMLAttributes<HTMLTextAreaElement>, HTMLTextAreaElement> {
+export interface TextareaProps {
     name: string;
     value: string | string[] | number;
     onChange: ChangeEventHandler<HTMLTextAreaElement>;
