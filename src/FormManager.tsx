@@ -1,8 +1,5 @@
 import { cloneDeep, get, has, isArray, isEqual, merge, set, unset } from 'lodash';
-import {
-    ChangeEvent, ChangeEventHandler, DetailedHTMLProps, FocusEvent, FocusEventHandler, Key, OptionHTMLAttributes,
-    SelectHTMLAttributes
-} from 'react';
+import { ChangeEvent, ChangeEventHandler, FocusEvent, FocusEventHandler, Key } from 'react';
 
 import { basicHandler, fileHandler, InputHandler, numberHandler } from './InputHandlers';
 
@@ -655,14 +652,17 @@ export interface InputProps {
 }
 
 export interface CheckboxProps extends InputProps {
+    type: 'checkbox';
     checked: boolean;
 }
 
 export interface RadioProps extends InputProps {
+    type: 'radio';
     checked: boolean;
 }
 
 export interface ChecklistProps extends InputProps {
+    type: 'checkbox';
     checked: boolean;
 }
 
@@ -674,7 +674,7 @@ export interface TextareaProps {
     onBlur: FocusEventHandler<HTMLTextAreaElement>;
 }
 
-export interface SelectProps extends DetailedHTMLProps<SelectHTMLAttributes<HTMLSelectElement>, HTMLSelectElement> {
+export interface SelectProps {
     name: string;
     value: string | string[] | number;
     onChange: ChangeEventHandler<HTMLSelectElement>;
@@ -682,7 +682,7 @@ export interface SelectProps extends DetailedHTMLProps<SelectHTMLAttributes<HTML
     onBlur: FocusEventHandler<HTMLSelectElement>;
 }
 
-export interface OptionProps extends DetailedHTMLProps<OptionHTMLAttributes<HTMLOptionElement>, HTMLOptionElement> {
+export interface OptionProps {
     value: string | string[] | number;
     key: Key;
 }
