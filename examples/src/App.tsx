@@ -33,6 +33,21 @@ const moneyInput = (rules: any = {}) => {
     };
 };
 
+interface Form {
+    title: string;
+    description: string;
+    amount: number;
+    category: {
+        id: number;
+    };
+    categories: any[];
+    manufacturer: {
+        name: string;
+    };
+    tags: string[];
+    subscribe: boolean;
+}
+
 const App = () => {
     const categories = [
         {
@@ -64,7 +79,7 @@ const App = () => {
         subscribe: true
     };
 
-    const form = useForm({
+    const form = useForm<Form>({
         values: product
     });
 

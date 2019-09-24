@@ -3,24 +3,24 @@ import { useState } from 'react';
 
 import FormManager, { FormState } from './FormManager';
 
-export interface UseFormOptions {
-    values?: any[] | object;
+export interface UseFormOptions<T> {
+    values?: T;
 }
 
-export interface InitialFormState {
-    values?: any;
-    initialValues?: any;
+export interface InitialFormState<T> {
+    values?: T;
+    initialValues?: T;
     formattedValues?: any;
     touched?: any;
     valid?: any;
 }
 
-const useForm = (initialState: InitialFormState = {}) => {
+function useForm<T extends object|T[]>(initialState: InitialFormState<T> = {}) {
     const emptyValue = () => isArray(initialState.values) ? [] : {};
 
-    const defaultState: FormState = {
-        values: cloneDeep(initialState.values) || emptyValue(),
-        initialValues: cloneDeep(initialState.initialValues || initialState.values) || emptyValue(),
+    const defaultState: FormState<T> = {
+        values: cloneDeep(initialState.values) || emptyValue() as T,
+        initialValues: cloneDeep(initialState.initialValues || initialState.values) || emptyValue() as T,
         formattedValues: emptyValue(),
         touched: emptyValue(),
         valid: emptyValue()
@@ -29,6 +29,6 @@ const useForm = (initialState: InitialFormState = {}) => {
     const [state, setState] = useState(defaultState);
 
     return new FormManager(state, setState);
-};
+}
 
 export default useForm;
