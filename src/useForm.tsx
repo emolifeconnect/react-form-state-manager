@@ -15,7 +15,7 @@ export interface InitialFormState<T> {
     valid?: any;
 }
 
-function useForm<T extends object|T[]>(initialState: InitialFormState<T> = {}) {
+function useForm<T extends object = any>(initialState: InitialFormState<T> = {}) {
     const emptyValue = () => isArray(initialState.values) ? [] : {};
 
     const defaultState: FormState<T> = {

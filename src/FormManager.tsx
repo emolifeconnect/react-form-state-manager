@@ -3,7 +3,7 @@ import { ChangeEvent, ChangeEventHandler, FocusEvent, FocusEventHandler, Key } f
 
 import { basicHandler, fileHandler, InputHandler, numberHandler } from './InputHandlers';
 
-export default class FormManager<T extends object|T[]> {
+export default class FormManager<T extends object = any> {
     public values = {} as T;
     public initialValues = {} as T;
     public formattedValues: any = {};
