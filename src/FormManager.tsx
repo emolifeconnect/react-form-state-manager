@@ -394,12 +394,39 @@ export default class FormManager<T extends object = any> {
         });
     }
 
+    public setParsedValues(values: T): void {
+        this.setState((state: FormState<T>) => {
+            return {
+                ...state,
+                values
+            } as FormState<T>;
+        });
+    }
+
     public getInitialValue(name: string): any {
         return get(this.state.initialValues, name, null);
     }
 
     public hasInitialValue(name: string): boolean {
         return this.getInitialValue(name) !== null;
+    }
+
+    public setInitialValue(name: string, value: any): void {
+        this.setState((state: FormState<T>) => {
+            return {
+                ...state,
+                initialValues: set(state.initialValues, name, value)
+            } as FormState<T>;
+        });
+    }
+
+    public setInitialValues(initialValues: T): void {
+        this.setState((state: FormState<T>) => {
+            return {
+                ...state,
+                initialValues
+            } as FormState<T>;
+        });
     }
 
     public getFormattedValue(name: string): string {

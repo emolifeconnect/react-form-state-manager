@@ -464,8 +464,8 @@ describe('helper methods', () => {
         valid: {}
     } as FormState);
 
-    const setState = (set: (state: FormState) => FormState) => {
-        currentState = set(currentState);
+    function setState(set: (state: FormState) => FormState) {
+        this.state = set(this.state);
     }
 
     beforeEach(() => {
@@ -490,9 +490,13 @@ describe('helper methods', () => {
         expect(form.getParsedValue('foo.bar')).toBe('test');
         expect(form.hasParsedValue('foo.bar')).toStrictEqual(true);
         expect(form.hasParsedValue('test')).toStrictEqual(false);
+
+        form.setParsedValues({ bar: 'foo' });
+
+        expect(form.getParsedValue('bar')).toBe('foo');
     });
 
-    it('should get an initial value', () => {
+    it('should get and set an initial value', () => {
         currentState = {
             initialValues: { foo: { bar: 'test' } }
         } as FormState;
@@ -502,9 +506,17 @@ describe('helper methods', () => {
         expect(form.getInitialValue('foo.bar')).toBe('test');
         expect(form.hasInitialValue('foo.bar')).toStrictEqual(true);
         expect(form.hasInitialValue('test')).toStrictEqual(false);
+
+        form.setInitialValue('foo.bar', '123');
+
+        expect(form.getInitialValue('foo.bar')).toBe('123');
+
+        form.setInitialValues({ bar: 'foo' });
+
+        expect(form.getInitialValue('bar')).toBe('foo');
     });
 
-    it('should set and get a parsed value', () => {
+    it('should set and get a formatted value', () => {
         const form = new FormManager(currentState, setState);
 
         form.setFormattedValue('foo.bar', 'test');
