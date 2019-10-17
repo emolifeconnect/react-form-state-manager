@@ -191,8 +191,6 @@ export default class FormManager<T extends object = any> {
         return (event: FocusEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
             const { name } = event.target;
 
-            this.setTouched(name, true);
-
             const parsedValue = this.getParsedValue(name);
 
             if (onFocus) {
@@ -204,6 +202,8 @@ export default class FormManager<T extends object = any> {
     protected basicBlurHandler({ onBlur }: InputOptions): FocusEventHandler {
         return (event: FocusEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
             const { name } = event.target;
+
+            this.setTouched(name, true);
 
             if (onBlur) {
                 onBlur(this.getParsedValue(name));
