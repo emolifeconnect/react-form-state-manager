@@ -1,4 +1,4 @@
-import { cloneDeep, get, has, isArray, isEqual, merge, set, unset } from 'lodash';
+import { cloneDeep, get, has, isArray, isEqual, isObject, merge, set, unset } from 'lodash';
 import { ChangeEvent, ChangeEventHandler, FocusEvent, FocusEventHandler, Key } from 'react';
 
 import { basicHandler, fileHandler, InputHandler, numberHandler } from './InputHandlers';
@@ -445,8 +445,28 @@ export default class FormManager<T extends object = any> {
         });
     }
 
-    public isValid(name: string): boolean {
-        return get(this.state.valid, name) || !has(this.state.valid, name);
+    public isValid(name?: string): boolean {
+        if (typeof name != 'undefined') {
+            return get(this.state.valid, name) || !has(this.state.valid, name);
+        }
+
+        return this.everythingIsValid();
+    }
+
+    protected everythingIsValid(value: any = this.valid) {
+        let valid = true;
+
+        if (isObject(value)) {
+            Object.keys(value).map(key => {
+                if (valid) {
+                    valid = this.everythingIsValid((value as any)[key]);
+                }
+            });
+        } else if (value !== true) {
+            valid = false;
+        }
+
+        return valid;
     }
 
     public setValidity(name: string, valid: boolean): void {

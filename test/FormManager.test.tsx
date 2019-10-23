@@ -533,6 +533,15 @@ describe('helper methods', () => {
 
         expect(form.isValid('foo.bar')).toStrictEqual(false);
         expect(form.isValid('test')).toStrictEqual(true);
+        expect(form.isValid()).toStrictEqual(false);
+
+        form.setValidity('test', true);
+
+        expect(form.isValid()).toStrictEqual(false);
+
+        form.setValidity('foo.bar', true);
+
+        expect(form.isValid()).toStrictEqual(true);
     });
 
     it('should set and get a touched status', () => {
