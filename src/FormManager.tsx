@@ -178,7 +178,7 @@ export default class FormManager<T extends object = any> {
             const valid = event.target.checkValidity() && ((valueIsEmpty && !required) || (!valueIsEmpty && inputHandler.validate(parsedValue)));
 
             if (onChange) {
-                onChange(parsedValue);
+                onChange(parsedValue, event);
             }
 
             this.setParsedValue(name, parsedValue);
@@ -194,7 +194,7 @@ export default class FormManager<T extends object = any> {
             const parsedValue = this.getParsedValue(name);
 
             if (onFocus) {
-                onFocus(parsedValue);
+                onFocus(parsedValue, event);
             }
         };
     }
@@ -204,7 +204,7 @@ export default class FormManager<T extends object = any> {
             const { name } = event.target;
 
             if (onBlur) {
-                onBlur(this.getParsedValue(name));
+                onBlur(this.getParsedValue(name), event);
             }
         };
     }
@@ -220,7 +220,7 @@ export default class FormManager<T extends object = any> {
             this.setTouched(name, true);
 
             if (onBlur) {
-                onBlur(parsedValue);
+                onBlur(parsedValue, event);
             }
         };
     }
@@ -237,7 +237,7 @@ export default class FormManager<T extends object = any> {
             this.setValidity(name, valid);
 
             if (onChange) {
-                onChange(file);
+                onChange(file, event);
             }
         };
     }
@@ -266,7 +266,7 @@ export default class FormManager<T extends object = any> {
             this.setValidity(name, true);
 
             if (onChange) {
-                onChange(checked);
+                onChange(checked, event);
             }
         };
     }
@@ -291,7 +291,7 @@ export default class FormManager<T extends object = any> {
             this.setValidity(name, true);
 
             if (onChange) {
-                onChange(value);
+                onChange(value, event);
             }
         };
     }
@@ -326,7 +326,7 @@ export default class FormManager<T extends object = any> {
             this.setValidity(name, true);
 
             if (onChange) {
-                onChange(list);
+                onChange(list, event);
             }
         };
     }
@@ -354,7 +354,7 @@ export default class FormManager<T extends object = any> {
             this.setValidity(name, true);
 
             if (onChange) {
-                onChange(parsedValue);
+                onChange(parsedValue, event);
             }
         };
     }
@@ -651,15 +651,15 @@ export interface InputOptions<T=any> {
     type?: string;
     name?: string;
     inputHandler?: InputHandler<T>;
-    onChange?: (value: T | null) => any;
-    onFocus?: (value: T | null) => any;
-    onBlur?: (value: T | null) => any;
+    onChange?: (value: T | null, event: ChangeEvent) => any;
+    onFocus?: (value: T | null, event: FocusEvent) => any;
+    onBlur?: (value: T | null, event: FocusEvent) => any;
 }
 
 export interface CheckboxOptions<T=any> {
-    onChange?: (value: T | null) => any;
-    onFocus?: (value: T | null) => any;
-    onBlur?: (value: T | null) => any;
+    onChange?: (value: T | null, event: ChangeEvent) => any;
+    onFocus?: (value: T | null, event: FocusEvent) => any;
+    onBlur?: (value: T | null, event: FocusEvent) => any;
 }
 
 export interface RadioOptions<T=any> extends CheckboxOptions {
@@ -675,17 +675,17 @@ export interface ChecklistOptions<T=any> extends CheckboxOptions {
 export interface TextareaOptions {
     name?: string;
     inputHandler?: InputHandler<string>;
-    onChange?: (value: string) => any;
-    onFocus?: (value: string) => any;
-    onBlur?: (value: string) => any;
+    onChange?: (value: string, event: ChangeEvent) => any;
+    onFocus?: (value: string, event: FocusEvent) => any;
+    onBlur?: (value: string, event: FocusEvent) => any;
 }
 
 export interface SelectOptions<T=any> {
     options?: T[];
     key?: string | number;
-    onChange?: (value: T | null) => any;
-    onFocus?: (value: T | null) => any;
-    onBlur?: (value: T | null) => any;
+    onChange?: (value: T | null, event: ChangeEvent) => any;
+    onFocus?: (value: T | null, event: FocusEvent) => any;
+    onBlur?: (value: T | null, event: FocusEvent) => any;
 }
 
 export interface InputProps {
