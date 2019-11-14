@@ -1,6 +1,6 @@
 {
   "name": "react-form-state-manager",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "React hook for managing (nested) form states",
   "private": false,
   "main": "dist/index.js",
