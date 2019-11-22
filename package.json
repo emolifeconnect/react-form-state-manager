@@ -26,7 +26,7 @@
     "typescript"
   ],
   "dependencies": {
-    "@types/lodash": "^4.14.147",
+    "@types/lodash": "^4.14.149",
     "lodash": "^4.17.15"
   },
   "devDependencies": {
@@ -37,9 +37,9 @@
     "@types/react-dom": "^16.9.4",
     "enzyme": "^3.10.0",
     "enzyme-adapter-react-16": "^1.15.1",
-    "jest": "^24.8.0",
-    "react": "^16.11.0",
-    "react-dom": "^16.11.0",
+    "jest": "^24.9.0",
+    "react": "^16.12.0",
+    "react-dom": "^16.12.0",
     "ts-jest": "^24.1.0",
     "typescript": "^3.7.2"
   },

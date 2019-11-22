@@ -1,7 +1,10 @@
-import { cloneDeep, get, has, isArray, isEqual, isObject, merge, set, unset } from 'lodash';
+import { cloneDeep, get, has, isArray, isEqual, isFunction, isObject, merge, set, unset } from 'lodash';
 import { ChangeEvent, ChangeEventHandler, FocusEvent, FocusEventHandler, Key } from 'react';
 
 import { basicHandler, fileHandler, InputHandler, numberHandler } from './InputHandlers';
+
+type SetState<T> = React.SetStateAction<T>;
+type StateSetter<T> = React.Dispatch<SetState<T>>;
 
 export default class FormManager<T extends object = any> {
     public values = {} as T;
@@ -10,7 +13,7 @@ export default class FormManager<T extends object = any> {
     public touched: any = {};
     public valid: any = {};
 
-    constructor(protected state: FormState<T>, protected setState: any) {
+    constructor(protected state: FormState<T>, protected setState: StateSetter<FormState<T>>) {
         this.values = state.values;
         this.initialValues = state.initialValues;
         this.formattedValues = state.formattedValues;
@@ -366,9 +369,18 @@ export default class FormManager<T extends object = any> {
         };
     }
 
-    public set(name: string, value: any): void {
-        this.setState((state: FormState<T>) => {
-            set(state.values, name, value);
+    public get(name: string): any {
+        return this.getParsedValue(name);
+    }
+
+    public set(name: string, value: SetState<any>): void {
+        this.setState((state) => {
+            set(
+                state.values,
+                name,
+                isFunction(value) ? value(get(state.values, name)) : value
+            );
+
             unset(state.formattedValues, name);
             unset(state.valid, name);
 
@@ -376,7 +388,7 @@ export default class FormManager<T extends object = any> {
         });
     }
 
-    public getParsedValue(name: string): any {
+    public getParsedValue(name?: string): any {
         return get(this.state.values, name, null);
     }
 
@@ -384,21 +396,25 @@ export default class FormManager<T extends object = any> {
         return this.getParsedValue(name) !== null;
     }
 
-    public setParsedValue(name: string, value: any): void {
-        this.setState((state: FormState<T>) => {
+    public setParsedValue(name: string, value: SetState<any>): void {
+        this.setState((state) => {
             return {
                 ...state,
-                values: set(state.values, name, value)
+                values: set(
+                    state.values,
+                    name,
+                    isFunction(value) ? value(get(state.values, name)) : value,
+                )
             } as FormState<T>;
         });
     }
 
-    public setParsedValues(values: T): void {
-        this.setState((state: FormState<T>) => {
+    public setParsedValues(values: SetState<T>): void {
+        this.setState((state) => {
             return {
                 ...state,
-                values
-            } as FormState<T>;
+                values: isFunction(values) ? values(state.values) : values
+            } as FormState<T>
         });
     }
 
@@ -410,21 +426,25 @@ export default class FormManager<T extends object = any> {
         return this.getInitialValue(name) !== null;
     }
 
-    public setInitialValue(name: string, value: any): void {
-        this.setState((state: FormState<T>) => {
+    public setInitialValue(name: string, value: SetState<any>): void {
+        this.setState((state) => {
             return {
                 ...state,
-                initialValues: set(state.initialValues, name, value)
+                initialValues: set(
+                    state.initialValues,
+                    name,
+                    isFunction(value) ? value(get(state.initialValues, name)) : value
+                )
             } as FormState<T>;
         });
     }
 
-    public setInitialValues(initialValues: T): void {
-        this.setState((state: FormState<T>) => {
+    public setInitialValues(values: SetState<T>): void {
+        this.setState((state) => {
             return {
                 ...state,
-                initialValues
-            } as FormState<T>;
+                initialValues: isFunction(values) ? values(state.initialValues) : values
+            } as FormState<T>
         });
     }
 
@@ -436,12 +456,25 @@ export default class FormManager<T extends object = any> {
         return this.getFormattedValue(name) !== null;
     }
 
-    public setFormattedValue(name: string, value: any): void {
-        this.setState((state: FormState<T>) => {
+    public setFormattedValue(name: string, value: SetState<any>): void {
+        this.setState((state) => {
             return {
                 ...state,
-                formattedValues: set(state.formattedValues, name, value)
+                formattedValues: set(
+                    state.formattedValues,
+                    name,
+                    isFunction(value) ? value(get(state.formattedValues, name)) : value,
+                )
             } as FormState<T>;
+        });
+    }
+
+    public setFormattedValues(values: SetState<T>): void {
+        this.setState((state) => {
+            return {
+                ...state,
+                formattedValues: isFunction(values) ? values(state.formattedValues) : values
+            } as FormState<T>
         });
     }
 
@@ -469,11 +502,15 @@ export default class FormManager<T extends object = any> {
         return valid;
     }
 
-    public setValidity(name: string, valid: boolean): void {
-        this.setState((state: FormState<T>) => {
+    public setValidity(name: string, valid: SetState<boolean>): void {
+        this.setState((state) => {
             return {
                 ...state,
-                valid: set(state.valid, name, valid)
+                valid: set(
+                    state.valid,
+                    name,
+                    isFunction(valid) ? valid(get(state.valid, name)) : valid,
+                )
             } as FormState<T>;
         });
     }
@@ -482,11 +519,15 @@ export default class FormManager<T extends object = any> {
         return get(this.state.touched, name, false);
     }
 
-    public setTouched(name: string, touched: boolean): void {
-        this.setState((state: FormState<T>) => {
+    public setTouched(name: string, touched: SetState<boolean>): void {
+        this.setState((state) => {
             return {
                 ...state,
-                touched: set(state.touched, name, touched)
+                touched: set(
+                    state.touched,
+                    name,
+                    isFunction(touched) ? touched(get(state.touched, name)) : touched,
+                )
             } as FormState<T>;
         });
     }
@@ -500,7 +541,7 @@ export default class FormManager<T extends object = any> {
     }
 
     public prepend(name: string, value: any): void {
-        this.setState((state: FormState<T>) => {
+        this.setState((state) => {
             return {
                 ...state,
                 values: set(state.values, name, [value, ...get(state.values, name, [])]),
@@ -512,7 +553,7 @@ export default class FormManager<T extends object = any> {
     }
 
     public append(name: string, value: any): void {
-        this.setState((state: FormState<T>) => {
+        this.setState((state) => {
             return {
                 ...state,
                 values: set(state.values, name, [...get(state.values, name, []), value]),
@@ -533,7 +574,7 @@ export default class FormManager<T extends object = any> {
     }
 
     public swap(first: string, second: string): void {
-        this.setState((state: FormState<T>) => {
+        this.setState((state) => {
             const value = get(state.values, first);
             const formattedValue = get(state.formattedValues, first);
             const touched = get(state.touched, first);
@@ -554,7 +595,7 @@ export default class FormManager<T extends object = any> {
     }
 
     public splice(name: string, index: number, count: number): void {
-        this.setState((state: FormState<T>) => {
+        this.setState((state) => {
             const lists = [
                 get(state.values, name),
                 get(state.formattedValues, name),
@@ -576,7 +617,7 @@ export default class FormManager<T extends object = any> {
         if (typeof index != 'undefined') {
             this.splice(name, index, 1);
         } else {
-            this.setState((state: FormState<T>) => {
+            this.setState((state) => {
                 unset(state.values, name);
                 unset(state.formattedValues, name);
                 unset(state.touched, name);
@@ -588,7 +629,7 @@ export default class FormManager<T extends object = any> {
     }
 
     public reset(name?: string): void {
-        this.setState((state: FormState<T>) => {
+        this.setState((state) => {
             if (typeof name == 'undefined') {
                 // Reset entire state
                 return {

@@ -480,6 +480,10 @@ describe('helper methods', () => {
         expect(form.values.foo).toBe('bar');
         expect(form.formattedValues.foo).toBeUndefined();
         expect(form.valid.foo).toBeUndefined();
+
+        form.set('foo', (value: string) => `${value}bar`);
+
+        expect(form.values.foo).toBe('barbar');
     });
 
     it('should set and get a parsed value', () => {
@@ -491,9 +495,17 @@ describe('helper methods', () => {
         expect(form.hasParsedValue('foo.bar')).toStrictEqual(true);
         expect(form.hasParsedValue('test')).toStrictEqual(false);
 
+        form.setParsedValue('foo.bar', (value: string) => `${value}test`);
+
+        expect(form.getParsedValue('foo.bar')).toBe('testtest');
+
         form.setParsedValues({ bar: 'foo' });
 
         expect(form.getParsedValue('bar')).toBe('foo');
+
+        form.setParsedValues((values: any) => ({ bar: `${values.bar}foo` }));
+
+        expect(form.getParsedValue('bar')).toBe('foofoo');
     });
 
     it('should get and set an initial value', () => {
@@ -511,9 +523,17 @@ describe('helper methods', () => {
 
         expect(form.getInitialValue('foo.bar')).toBe('123');
 
+        form.setInitialValue('foo.bar', (value: string) => `${value}123`);
+
+        expect(form.getInitialValue('foo.bar')).toBe('123123');
+
         form.setInitialValues({ bar: 'foo' });
 
         expect(form.getInitialValue('bar')).toBe('foo');
+
+        form.setInitialValues((values: any) => ({ bar: `${values.bar}foo` }));
+
+        expect(form.getInitialValue('bar')).toBe('foofoo');
     });
 
     it('should set and get a formatted value', () => {
@@ -524,6 +544,18 @@ describe('helper methods', () => {
         expect(form.getFormattedValue('foo.bar')).toBe('test');
         expect(form.hasFormattedValue('foo.bar')).toStrictEqual(true);
         expect(form.hasFormattedValue('test')).toStrictEqual(false);
+
+        form.setFormattedValue('foo.bar', (value: string) => `${value}test`);
+
+        expect(form.getFormattedValue('foo.bar')).toBe('testtest');
+
+        form.setFormattedValues({ bar: 'foo' });
+
+        expect(form.getFormattedValue('bar')).toBe('foo');
+
+        form.setFormattedValues((values: any) => ({ bar: `${values.bar}foo` }));
+
+        expect(form.getFormattedValue('bar')).toBe('foofoo');
     });
 
     it('should set and get a validity', () => {
@@ -542,6 +574,10 @@ describe('helper methods', () => {
         form.setValidity('foo.bar', true);
 
         expect(form.isValid()).toStrictEqual(true);
+
+        form.setValidity('foo.bar', valid => !valid);
+
+        expect(form.isValid('foo.bar')).toStrictEqual(false);
     });
 
     it('should set and get a touched status', () => {
@@ -551,6 +587,10 @@ describe('helper methods', () => {
 
         expect(form.getTouched('foo.bar')).toStrictEqual(false);
         expect(form.getTouched('test')).toStrictEqual(false);
+
+        form.setTouched('foo.bar', touched => !touched);
+
+        expect(form.getTouched('foo.bar')).toStrictEqual(true);
     });
 
     it('should determine if a value has changed', () => {
