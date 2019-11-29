@@ -21,9 +21,9 @@ function useForm<T extends object = any>(initialState: InitialFormState<T> = {})
     const defaultState: FormState<T> = {
         values: cloneDeep(initialState.values) || emptyValue() as T,
         initialValues: cloneDeep(initialState.initialValues || initialState.values) || emptyValue() as T,
-        formattedValues: emptyValue(),
-        touched: emptyValue(),
-        valid: emptyValue()
+        formattedValues: initialState.formattedValues || emptyValue(),
+        touched: initialState.touched || emptyValue(),
+        valid: initialState.valid || emptyValue()
     };
 
     const [state, setState] = useState(defaultState);

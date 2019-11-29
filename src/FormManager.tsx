@@ -1,5 +1,5 @@
 import { cloneDeep, get, has, isArray, isEqual, isFunction, isObject, merge, set, unset } from 'lodash';
-import { ChangeEvent, ChangeEventHandler, FocusEvent, FocusEventHandler, Key } from 'react';
+import { ChangeEvent, ChangeEventHandler, FocusEvent, FocusEventHandler, Key, KeyboardEventHandler, KeyboardEvent } from 'react';
 
 import { basicHandler, fileHandler, InputHandler, numberHandler } from './InputHandlers';
 
@@ -13,12 +13,24 @@ export default class FormManager<T extends object = any> {
     public touched: any = {};
     public valid: any = {};
 
-    constructor(protected state: FormState<T>, protected setState: StateSetter<FormState<T>>) {
+    constructor(protected state: FormState<T>, protected stateSetter: StateSetter<FormState<T>>) {
+        this.copyState(state);
+    }
+
+    protected setState(value: SetState<FormState<T>>) {
+        const state = isFunction(value) ? value(this.state) : value;
+
+        this.stateSetter(state);
+
+        this.copyState(state);
+    }
+
+    protected copyState(state: FormState<T>) {
         this.values = state.values;
-        this.initialValues = state.initialValues;
         this.formattedValues = state.formattedValues;
-        this.touched = state.touched;
+        this.initialValues = state.initialValues;
         this.valid = state.valid;
+        this.touched = state.touched;
     }
 
     public text(name: string, options: InputOptions = {}): InputProps {
@@ -122,7 +134,8 @@ export default class FormManager<T extends object = any> {
             value: this.getInputValue(options.name, options.inputHandler),
             onChange: this.inputChangeHandler(options),
             onFocus: this.basicFocusHandler(options),
-            onBlur: this.inputBlurHandler(options)
+            onBlur: this.inputBlurHandler(options),
+            onKeyDown: this.inputKeyDownHandler(options),
         };
     }
 
@@ -224,6 +237,14 @@ export default class FormManager<T extends object = any> {
 
             if (onBlur) {
                 onBlur(parsedValue, event);
+            }
+        };
+    }
+
+    protected inputKeyDownHandler({ name }: InputOptions): KeyboardEventHandler {
+        return ({ key }: KeyboardEvent<HTMLInputElement>) => {
+            if (key === 'Enter'){
+                this.setTouched(name, true);
             }
         };
     }
@@ -373,23 +394,29 @@ export default class FormManager<T extends object = any> {
         return this.getParsedValue(name);
     }
 
-    public set(name: string, value: SetState<any>): void {
+    public set(name: string | SetState<T>, value?: SetState<any>): void {
         this.setState((state) => {
-            set(
-                state.values,
-                name,
-                isFunction(value) ? value(get(state.values, name)) : value
-            );
+            if (isObject(name) || isFunction(name)) {
+                state.values = isFunction(name) ? name(state.values) : name
+                state.formattedValues = {};
+                state.valid = {};
+            } else {
+                set(
+                    state.values,
+                    name,
+                    isFunction(value) ? value(get(state.values, name)) : value
+                );
 
-            unset(state.formattedValues, name);
-            unset(state.valid, name);
+                unset(state.formattedValues, name);
+                unset(state.valid, name);
+            }
 
             return { ...state };
         });
     }
 
     public getParsedValue(name?: string): any {
-        return get(this.state.values, name, null);
+        return get(this.values, name, null);
     }
 
     public hasParsedValue(name: string): boolean {
@@ -405,7 +432,7 @@ export default class FormManager<T extends object = any> {
                     name,
                     isFunction(value) ? value(get(state.values, name)) : value,
                 )
-            } as FormState<T>;
+            };
         });
     }
 
@@ -414,12 +441,12 @@ export default class FormManager<T extends object = any> {
             return {
                 ...state,
                 values: isFunction(values) ? values(state.values) : values
-            } as FormState<T>
+            };
         });
     }
 
     public getInitialValue(name: string): any {
-        return get(this.state.initialValues, name, null);
+        return get(this.initialValues, name, null);
     }
 
     public hasInitialValue(name: string): boolean {
@@ -435,7 +462,7 @@ export default class FormManager<T extends object = any> {
                     name,
                     isFunction(value) ? value(get(state.initialValues, name)) : value
                 )
-            } as FormState<T>;
+            };
         });
     }
 
@@ -444,12 +471,12 @@ export default class FormManager<T extends object = any> {
             return {
                 ...state,
                 initialValues: isFunction(values) ? values(state.initialValues) : values
-            } as FormState<T>
+            };
         });
     }
 
     public getFormattedValue(name: string): string {
-        return get(this.state.formattedValues, name, null);
+        return get(this.formattedValues, name, null);
     }
 
     public hasFormattedValue(name: string): boolean {
@@ -465,7 +492,7 @@ export default class FormManager<T extends object = any> {
                     name,
                     isFunction(value) ? value(get(state.formattedValues, name)) : value,
                 )
-            } as FormState<T>;
+            };
         });
     }
 
@@ -474,13 +501,13 @@ export default class FormManager<T extends object = any> {
             return {
                 ...state,
                 formattedValues: isFunction(values) ? values(state.formattedValues) : values
-            } as FormState<T>
+            };
         });
     }
 
     public isValid(name?: string): boolean {
         if (typeof name != 'undefined') {
-            return get(this.state.valid, name) || !has(this.state.valid, name);
+            return get(this.valid, name) || !has(this.valid, name);
         }
 
         return this.everythingIsValid();
@@ -511,12 +538,12 @@ export default class FormManager<T extends object = any> {
                     name,
                     isFunction(valid) ? valid(get(state.valid, name)) : valid,
                 )
-            } as FormState<T>;
+            };
         });
     }
 
     public getTouched(name: string): boolean {
-        return get(this.state.touched, name, false);
+        return get(this.touched, name, false);
     }
 
     public setTouched(name: string, touched: SetState<boolean>): void {
@@ -528,7 +555,7 @@ export default class FormManager<T extends object = any> {
                     name,
                     isFunction(touched) ? touched(get(state.touched, name)) : touched,
                 )
-            } as FormState<T>;
+            };
         });
     }
 
@@ -537,7 +564,7 @@ export default class FormManager<T extends object = any> {
             return !this.isEqual(this.getParsedValue(name), this.getInitialValue(name));
         }
 
-        return !this.isEqual(this.state.initialValues || {}, this.state.values || {});
+        return !this.isEqual(this.initialValues || {}, this.values || {});
     }
 
     public prepend(name: string, value: any): void {
@@ -634,7 +661,7 @@ export default class FormManager<T extends object = any> {
                 // Reset entire state
                 return {
                     ...state,
-                    values: cloneDeep(this.state.initialValues),
+                    values: cloneDeep(this.initialValues),
                     formattedValues: {},
                     touched: {},
                     valid: {}
@@ -736,6 +763,7 @@ export interface InputProps {
     onChange: ChangeEventHandler<HTMLInputElement>;
     onFocus: FocusEventHandler<HTMLInputElement>;
     onBlur: FocusEventHandler<HTMLInputElement>;
+    onKeyDown?: KeyboardEventHandler<HTMLInputElement>;
 }
 
 export interface CheckboxProps extends InputProps {

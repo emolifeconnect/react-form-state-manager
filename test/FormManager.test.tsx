@@ -1,10 +1,12 @@
 import { configure, shallow, ShallowWrapper } from 'enzyme';
+import { isFunction } from 'lodash';
 import Adapter from 'enzyme-adapter-react-16';
 import React from 'react';
 import { act } from 'react-dom/test-utils';
 
 import FormManager, { FormState } from '../src/FormManager';
 import useForm from '../src/useForm';
+
 
 configure({ adapter: new Adapter });
 
@@ -464,8 +466,8 @@ describe('helper methods', () => {
         valid: {}
     } as FormState);
 
-    function setState(set: (state: FormState) => FormState) {
-        this.state = set(this.state);
+    function setState(set: (state: FormState) => FormState | FormState) {
+        this.state = isFunction(set) ? set(this.state) : set;
     }
 
     beforeEach(() => {
@@ -484,6 +486,14 @@ describe('helper methods', () => {
         form.set('foo', (value: string) => `${value}bar`);
 
         expect(form.values.foo).toBe('barbar');
+
+        form.set({ bar: 'foo' });
+
+        expect(form.values.bar).toBe('foo');
+
+        form.set((values: any) => ({ test: '123' }));
+
+        expect(form.values.test).toBe('123');
     });
 
     it('should set and get a parsed value', () => {

@@ -179,7 +179,10 @@ const App = () => {
             <pre>{JSON.stringify(form.formattedValues, null, 2)}</pre>
 
             <h3>Validity</h3>
-            <pre>{JSON.stringify(form.valid, null ,2)}</pre>
+            <pre>{JSON.stringify(form.valid, null, 2)}</pre>
+
+            <h3>Touched</h3>
+            <pre>{JSON.stringify(form.touched, null, 2)}</pre>
         </div>
     </div>;
 };
