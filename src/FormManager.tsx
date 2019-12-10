@@ -219,6 +219,8 @@ export default class FormManager<T extends object = any> {
         return (event: FocusEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
             const { name } = event.target;
 
+            this.setTouched(name, true);
+
             if (onBlur) {
                 onBlur(this.getParsedValue(name), event);
             }
@@ -374,7 +376,6 @@ export default class FormManager<T extends object = any> {
             const parsedValue = options ? options[parseInt(value) || 0] : value;
 
             this.setParsedValue(name, parsedValue);
-            this.setTouched(name, true);
             this.setValidity(name, true);
 
             if (onChange) {
