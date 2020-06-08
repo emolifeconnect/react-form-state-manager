@@ -1,5 +1,5 @@
 import { cloneDeep, isArray } from 'lodash';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 
 import FormManager, { FormState } from './FormManager';
 
@@ -28,7 +28,9 @@ function useForm<T extends object = any>(initialState: InitialFormState<T> = {})
 
     const [state, setState] = useState(defaultState);
 
-    return new FormManager(state, setState);
+    const { current: form } = useRef(new FormManager(state, setState));
+
+    return form;
 }
 
 export default useForm;
