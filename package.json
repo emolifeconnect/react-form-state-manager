@@ -8,6 +8,7 @@
   "types": "dist/index.d.ts",
   "repository": "emolifeconnect/react-form-state-manager",
   "homepage": "https://github.com/emolifeconnect/react-form-state-manager",
+  "type": "module",
   "scripts": {
     "build": "./node_modules/typescript/bin/tsc",
     "test": "./node_modules/.bin/jest"
