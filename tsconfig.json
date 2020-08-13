@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-        "module": "es6",
+        "module": "CommonJS",
         "target": "es5",
         "jsx": "react",
         "declaration": true,
