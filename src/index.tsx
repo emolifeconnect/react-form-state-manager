@@ -1,8 +1,5 @@
-export { default as useForm } from './useForm';
-export { default as FormManager } from './FormManager';
-export * from './InputHandlers';
-
-export {
+import useForm from './useForm';
+import FormManager, {
     FormState,
     InputOptions,
     CheckboxOptions,
@@ -18,3 +15,27 @@ export {
     SelectProps,
     OptionProps
 } from './FormManager';
+import { InputHandler, basicHandler, numberHandler, fileHandler } from './InputHandlers';
+
+export {
+    useForm,
+    FormManager,
+    InputHandler,
+    basicHandler,
+    numberHandler,
+    fileHandler,
+    FormState,
+    InputOptions,
+    CheckboxOptions,
+    RadioOptions,
+    ChecklistOptions,
+    TextareaOptions,
+    SelectOptions,
+    InputProps,
+    CheckboxProps,
+    RadioProps,
+    ChecklistProps,
+    TextareaProps,
+    SelectProps,
+    OptionProps
+};
