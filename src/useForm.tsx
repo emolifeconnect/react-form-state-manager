@@ -28,9 +28,7 @@ function useForm<T extends object = any>(initialState: InitialFormState<T> = {})
 
     const [state, setState] = useState(defaultState);
 
-    const { current: form } = useRef(new FormManager(state, setState));
-
-    return form;
+    return new FormManager(state, setState);
 }
 
 export default useForm;
