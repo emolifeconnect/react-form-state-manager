@@ -1,6 +1,6 @@
 {
   "name": "react-form-state-manager",
-  "version": "1.3.6",
+  "version": "1.3.7",
   "description": "React hook for managing (nested) form states",
   "private": false,
   "main": "dist/index.js",
@@ -8,7 +8,6 @@
   "types": "dist/index.d.ts",
   "repository": "emolifeconnect/react-form-state-manager",
   "homepage": "https://github.com/emolifeconnect/react-form-state-manager",
-  "type": "module",
   "scripts": {
     "build": "./node_modules/typescript/bin/tsc",
     "test": "./node_modules/.bin/jest"
