@@ -419,7 +419,7 @@ export default class FormManager<T extends object = any> {
 
             return {
                 ...state,
-                values: isFunction(value) ? value(get(state.values, name)) : value,
+                values: isFunction(value) ? value(state.values) : value,
                 formattedValues: {},
                 valid: {},
             };
