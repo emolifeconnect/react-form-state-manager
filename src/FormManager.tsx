@@ -1,4 +1,4 @@
-import { cloneDeep, get, has, isArray, isEqual, isFunction, isObject, merge, set, unset } from 'lodash';
+import { cloneDeep, get, has, isArray, isEqual, isFunction, isObject, merge, omit, set, unset } from 'lodash';
 import { ChangeEvent, ChangeEventHandler, FocusEvent, FocusEventHandler, Key, KeyboardEventHandler, KeyboardEvent } from 'react';
 
 import { basicHandler, fileHandler, InputHandler, numberHandler } from './InputHandlers';
@@ -391,33 +391,47 @@ export default class FormManager<T extends object = any> {
         };
     }
 
-    public get(name: string): any {
+    public get(name?: string | null): any {
         return this.getParsedValue(name);
     }
 
-    public set(name: string | SetState<T>, value?: SetState<any>): void {
+    public set(name?: string | SetState<T> | null, value?: SetState<any>): void {
         this.setState((state) => {
             if (isObject(name) || isFunction(name)) {
-                state.values = isFunction(name) ? name(state.values) : name
-                state.formattedValues = {};
-                state.valid = {};
-            } else {
-                set(
-                    state.values,
-                    name,
-                    isFunction(value) ? value(get(state.values, name)) : value
-                );
-
-                unset(state.formattedValues, name);
-                unset(state.valid, name);
+                return {
+                    ...state,
+                    values: isFunction(name) ? name(state.values) : name,
+                    formattedValues: {},
+                    valid: {},
+                };
+            } else if (name) {
+                return {
+                    ...state,
+                    values: set(
+                        { ...state.values },
+                        name,
+                        isFunction(value) ? value(get(state.values, name)) : value
+                    ),
+                    formattedValues: omit(state.formattedValues, name),
+                    valid: omit(state.valid, name),
+                };
             }
 
-            return { ...state };
+            return {
+                ...state,
+                values: isFunction(value) ? value(get(state.values, name)) : value,
+                formattedValues: {},
+                valid: {},
+            };
         });
     }
 
-    public getParsedValue(name?: string): any {
-        return get(this.values, name, null);
+    public getParsedValue(name?: string | null): any {
+        if (name) {
+            return get(this.values, name, null);
+        }
+
+        return this.values;
     }
 
     public hasParsedValue(name: string): boolean {

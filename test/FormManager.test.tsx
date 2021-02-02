@@ -494,6 +494,11 @@ describe('helper methods', () => {
         form.set((values: any) => ({ test: '123' }));
 
         expect(form.values.test).toBe('123');
+
+        form.set(null, { bar: '123' });
+
+        expect(form.values.bar).toBe('123');
+        expect(form.get(null).bar).toBe('123');
     });
 
     it('should set and get a parsed value', () => {
