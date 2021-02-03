@@ -404,7 +404,9 @@ export default class FormManager<T extends object = any> {
                     formattedValues: {},
                     valid: {},
                 };
-            } else if (name) {
+            }
+
+            if (name) {
                 return {
                     ...state,
                     values: set(
@@ -670,26 +672,43 @@ export default class FormManager<T extends object = any> {
         }
     }
 
-    public reset(name?: string): void {
+    public reset(name?: string | SetState<T> | null,): void {
         this.setState((state) => {
-            if (typeof name == 'undefined') {
-                // Reset entire state
+            // Reset whole state
+            if (isObject(name) || isFunction(name)) {
                 return {
                     ...state,
-                    values: cloneDeep(this.initialValues),
+                    values: isFunction(name) ? name(state.values) : name,
+                    initialValues: isFunction(name) ? name(state.initialValues) : name,
                     formattedValues: {},
                     touched: {},
-                    valid: {}
+                    valid: {},
                 };
             }
 
-            // Reset single value
-            set(state.values, name, cloneDeep(get(state.initialValues, name, null)));
-            unset(state.formattedValues, name);
-            unset(state.touched, name);
-            unset(state.valid, name);
+            // Reset single key
+            if (name) {
+                return {
+                    ...state,
+                    values: set(
+                        { ...state.values },
+                        name,
+                        cloneDeep(get(state.initialValues, name, null)),
+                    ),
+                    formattedValues: omit(state.formattedValues, name),
+                    touched: omit(state.touched, name),
+                    valid: omit(state.valid, name),
+                };
+            }
 
-            return { ...state };
+            // Reset entire state
+            return {
+                ...state,
+                values: cloneDeep(this.initialValues),
+                formattedValues: {},
+                touched: {},
+                valid: {}
+            }
         });
     }
 

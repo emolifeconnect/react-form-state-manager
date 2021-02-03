@@ -742,6 +742,14 @@ describe('helper methods', () => {
         expect(form.formattedValues).toEqual({});
         expect(form.touched).toEqual({});
         expect(form.valid).toEqual({});
+
+        form.reset({ 'bar': 'foo '});
+
+        expect(form.values).toEqual({ 'bar': 'foo '});
+        expect(form.initialValues).toEqual({ 'bar': 'foo '});
+        expect(form.formattedValues).toEqual({});
+        expect(form.touched).toEqual({});
+        expect(form.valid).toEqual({});
     });
 
     it('should determine if two objects are equal based on a key', () => {
