@@ -18,11 +18,11 @@ export default class FormManager<T extends object = any> {
     }
 
     protected setState(value: SetState<FormState<T>>) {
-        const state = isFunction(value) ? value(this.state) : value;
-
-        this.stateSetter(state);
-
-        this.copyState(state);
+        this.stateSetter((state) => {
+            const newState = isFunction(value) ? value(state) : value;
+            this.copyState(newState)
+            return newState;
+        });
     }
 
     protected copyState(state: FormState<T>) {
@@ -442,13 +442,17 @@ export default class FormManager<T extends object = any> {
 
     public setParsedValue(name: string, value: SetState<any>): void {
         this.setState((state) => {
+            const oldValue = get(state.values, name);
+            const newValue = isFunction(value) ? value(oldValue) : value;
+
+            if (oldValue === newValue) {
+                // Prevent rerender, return old state
+                return state;
+            }
+
             return {
                 ...state,
-                values: set(
-                    state.values,
-                    name,
-                    isFunction(value) ? value(get(state.values, name)) : value,
-                )
+                values: set(state.values, name, newValue),
             };
         });
     }
@@ -472,13 +476,17 @@ export default class FormManager<T extends object = any> {
 
     public setInitialValue(name: string, value: SetState<any>): void {
         this.setState((state) => {
+            const oldValue = get(state.initialValues, name);
+            const newValue = isFunction(value) ? value(oldValue) : value;
+
+            if (oldValue === newValue) {
+                // Prevent rerender, return old state
+                return state;
+            }
+
             return {
                 ...state,
-                initialValues: set(
-                    state.initialValues,
-                    name,
-                    isFunction(value) ? value(get(state.initialValues, name)) : value
-                )
+                initialValues: set(state.initialValues, name, newValue),
             };
         });
     }
@@ -502,13 +510,17 @@ export default class FormManager<T extends object = any> {
 
     public setFormattedValue(name: string, value: SetState<any>): void {
         this.setState((state) => {
+            const oldValue = get(state.formattedValues, name);
+            const newValue = isFunction(value) ? value(oldValue) : value;
+
+            if (oldValue === newValue) {
+                // Prevent rerender, return old state
+                return state;
+            }
+
             return {
                 ...state,
-                formattedValues: set(
-                    state.formattedValues,
-                    name,
-                    isFunction(value) ? value(get(state.formattedValues, name)) : value,
-                )
+                formattedValues: set(state.formattedValues, name, newValue),
             };
         });
     }
@@ -548,13 +560,17 @@ export default class FormManager<T extends object = any> {
 
     public setValidity(name: string, valid: SetState<boolean>): void {
         this.setState((state) => {
+            const oldValue = get(state.valid, name);
+            const newValue = isFunction(valid) ? valid(oldValue) : valid;
+
+            if (oldValue === newValue) {
+                // Prevent rerender, return old state
+                return state;
+            }
+
             return {
                 ...state,
-                valid: set(
-                    state.valid,
-                    name,
-                    isFunction(valid) ? valid(get(state.valid, name)) : valid,
-                )
+                valid: set(state.valid, name, newValue),
             };
         });
     }
@@ -565,13 +581,17 @@ export default class FormManager<T extends object = any> {
 
     public setTouched(name: string, touched: SetState<boolean>): void {
         this.setState((state) => {
+            const oldValue = get(state.touched, name);
+            const newValue = isFunction(touched) ? touched(oldValue) : touched;
+
+            if (oldValue === newValue) {
+                // Prevent rerender, return old state
+                return state;
+            }
+
             return {
                 ...state,
-                touched: set(
-                    state.touched,
-                    name,
-                    isFunction(touched) ? touched(get(state.touched, name)) : touched,
-                )
+                touched: set(state.touched, name, newValue),
             };
         });
     }
