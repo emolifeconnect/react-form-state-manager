@@ -699,7 +699,7 @@ export default class FormManager<T extends object = any> {
                 return {
                     ...state,
                     values: isFunction(name) ? name(state.values) : name,
-                    initialValues: isFunction(name) ? name(state.initialValues) : name,
+                    initialValues: cloneDeep(isFunction(name) ? name(state.initialValues) : name),
                     formattedValues: {},
                     touched: {},
                     valid: {},
