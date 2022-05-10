@@ -1,5 +1,15 @@
-import { cloneDeep, get, has, isArray, isEqual, isFunction, isObject, merge, omit, set, unset } from 'lodash';
 import { ChangeEvent, ChangeEventHandler, FocusEvent, FocusEventHandler, Key, KeyboardEventHandler, KeyboardEvent } from 'react';
+import cloneDeep from 'lodash/cloneDeep';
+import get from 'lodash/get';
+import has from 'lodash/has';
+import isArray from 'lodash/isArray';
+import isEqual from 'lodash/isEqual';
+import isFunction from 'lodash/isFunction';
+import isObject from 'lodash/isObject';
+import merge from 'lodash/merge';
+import omit from 'lodash/omit';
+import set from 'lodash/set';
+import unset  from 'lodash/unset';
 
 import { basicHandler, fileHandler, InputHandler, numberHandler } from './InputHandlers';
 

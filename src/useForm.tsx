@@ -1,5 +1,6 @@
-import { cloneDeep, isArray } from 'lodash';
-import { useState, useRef } from 'react';
+import { useState } from 'react';
+import cloneDeep from 'lodash/cloneDeep';
+import isArray from 'lodash/isArray';
 
 import FormManager, { FormState } from './FormManager';
 
