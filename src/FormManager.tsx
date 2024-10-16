@@ -1,4 +1,4 @@
-import { ChangeEvent, ChangeEventHandler, FocusEvent, FocusEventHandler, Key, KeyboardEventHandler, KeyboardEvent } from 'react';
+import { ChangeEvent, ChangeEventHandler, FocusEvent, FocusEventHandler, KeyboardEventHandler, KeyboardEvent } from 'react';
 import cloneDeep from 'lodash/cloneDeep';
 import get from 'lodash/get';
 import has from 'lodash/has';
@@ -397,7 +397,6 @@ export default class FormManager<T extends object = any> {
     public option(value: string | string[] | number): OptionProps {
         return {
             value,
-            key: value + ''
         };
     }
 
@@ -863,5 +862,4 @@ export interface SelectProps {
 
 export interface OptionProps {
     value: string | string[] | number;
-    key: Key;
 }
